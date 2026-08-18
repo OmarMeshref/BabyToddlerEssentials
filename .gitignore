@@ -488,3 +488,5 @@ wwwroot/uploads/*
 *.db
 *.db-shm
 *.db-wal
+
+**/serviceDependencies.local.json
