@@ -25,13 +25,17 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // Identity
 // =========================================
 
-builder.Services
-    .AddDefaultIdentity<ApplicationUser>(options =>
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     {
         options.SignIn.RequireConfirmedAccount = false;
     })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
 
 
 // Dummy Email Sender for development
