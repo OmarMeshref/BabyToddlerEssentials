@@ -2,25 +2,25 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BabyToddlerEssentials.Controllers
 {
     [Authorize]
-    public class ProfileController : Controller
+    public class UserController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public ProfileController(UserManager<ApplicationUser> userManager)
+        public UserController(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<IActionResult> Profile()
         {
             var user = await _userManager.GetUserAsync(User);
 
-            if (user == null)
+            if (user == null) 
             {
                 return NotFound();
             }
@@ -39,7 +39,7 @@ namespace BabyToddlerEssentials.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit()
+        public async Task<IActionResult> EditProfile()
         {
             var user = await _userManager.GetUserAsync(User);
 
@@ -60,7 +60,7 @@ namespace BabyToddlerEssentials.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(EditProfileViewModel model)
+        public async Task<IActionResult> EditProfile(EditProfileViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -91,7 +91,13 @@ namespace BabyToddlerEssentials.Controllers
 
             TempData["SuccessMessage"] = "Profile updated successfully.";
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Profile));
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }

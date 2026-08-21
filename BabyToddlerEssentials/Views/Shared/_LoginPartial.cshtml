@@ -17,7 +17,7 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Profile" asp-action="Index">
+            <a class="nav-link text-dark" asp-controller="User" asp-action="Profile">
                 Hello @(string.IsNullOrWhiteSpace(currentUser?.FullName)
                     ? currentUser?.Email
                     : currentUser.FullName)!

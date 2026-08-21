@@ -18,8 +18,8 @@
 
                 <div class="card-body">
 
-                    <form asp-controller="Profile"
-                          asp-action="Edit"
+                    <form asp-controller="User"
+                          asp-action="EditProfile"
                           method="post">
 
                         <div asp-validation-summary="ModelOnly"
@@ -73,8 +73,8 @@
                             Save Changes
                         </button>
 
-                        <a asp-controller="Profile"
-                           asp-action="Index"
+                        <a asp-controller="User"
+                           asp-action="Profile"
                            class="btn btn-secondary">
                             Cancel
                         </a>
