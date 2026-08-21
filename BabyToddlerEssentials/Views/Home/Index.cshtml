@@ -34,14 +34,20 @@
             <div class="hero-cta">
 
                 <!-- Activate when ProductsController is ready -->
-                <span class="btn">
+                <a asp-controller="Product"
+                   asp-action="Index"
+                   class="btn">
+
                     Shop the collection
-                </span>
+
+                </a>
 
                 <!-- Activate when CategoryController is ready -->
-                <span class="btn btn--ghost">
+                <a asp-controller="Categories" asp-action="Index" class="btn btn--ghost">
+
                     Browse categories
-                </span>
+
+                </a>
 
             </div>
 
@@ -135,7 +141,7 @@
                 {
                     <!-- Activate link when CategoryController is ready -->
 
-                    <div class="cat-tile">
+                    <a asp-controller="Categories" asp-action="Details" asp-route-id="@category.Id" class="cat-tile">
 
                         <div class="emoji">
                             🧸
@@ -145,7 +151,7 @@
                             @category.Name
                         </div>
 
-                    </div>
+                    </a>
                 }
 
             </div>
@@ -293,9 +299,13 @@
 
                 <!-- Activate Products link later -->
 
-                <span class="btn btn--sky">
+                <a asp-controller="Product"
+                   asp-action="Index"
+                   class="btn btn--sky">
+
                     See all products →
-                </span>
+
+                </a>
 
             </div>
         }
@@ -504,9 +514,13 @@
 
         <!-- Activate when ProductsController exists -->
 
-        <span class="btn">
+        <a asp-controller="Product"
+           asp-action="Index"
+           class="btn">
+
             Explore products
-        </span>
+
+        </a>
 
     </div>
 

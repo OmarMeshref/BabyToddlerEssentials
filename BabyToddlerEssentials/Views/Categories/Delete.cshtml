@@ -1,0 +1,120 @@
+@model BabyToddlerEssentials.ViewModels.Categories.CategoriesManageItemViewModel
+
+@{
+    ViewData["Title"] = "Delete Category";
+    ViewData["Page"] = "admin";
+}
+
+<section class="page-head">
+
+    <div class="wrap">
+
+        <a asp-controller="Categories"
+           asp-action="Manage"
+           class="link-back">
+
+            ← Manage Categories
+
+        </a>
+
+        <h1>
+            Delete Category
+        </h1>
+
+    </div>
+
+</section>
+
+
+<section class="section"
+         style="padding-top:20px;">
+
+    <div class="wrap">
+
+        <div class="form-card"
+             style="max-width:650px;">
+
+            <span class="eyebrow">
+                Confirmation
+            </span>
+
+
+            <h2>
+                Deactivate @Model.Name?
+            </h2>
+
+
+            <p style="color:var(--ink-soft);">
+
+                This category will no longer be visible
+                to normal customers.
+
+            </p>
+
+
+            @if (Model.ProductCount > 0)
+            {
+                <div class="auth-msg show bad">
+
+                    This category currently contains
+                    @Model.ProductCount
+                    @(Model.ProductCount == 1
+                        ? "product"
+                        : "products").
+
+                    The products will not be deleted.
+
+                </div>
+            }
+
+
+            @if (!Model.IsActive)
+            {
+                <div class="auth-msg show bad">
+
+                    This category is already inactive.
+
+                </div>
+            }
+
+
+            <form asp-controller="Categories"
+                  asp-action="Delete"
+                  asp-route-id="@Model.Id"
+                  method="post">
+
+                <div style="
+                    display:flex;
+                    gap:10px;
+                    flex-wrap:wrap;
+                    margin-top:20px;">
+
+
+                    @if (Model.IsActive)
+                    {
+                        <button class="btn"
+                                type="submit">
+
+                            Yes, Deactivate
+
+                        </button>
+                    }
+
+
+                    <a asp-controller="Categories"
+                       asp-action="Manage"
+                       class="btn btn--ghost">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>

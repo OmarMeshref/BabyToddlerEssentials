@@ -1,0 +1,181 @@
+@model BabyToddlerEssentials.ViewModels.Categories.CategoriesFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Category";
+    ViewData["Page"] = "admin";
+}
+
+<section class="page-head">
+
+    <div class="wrap">
+
+        <a asp-controller="Categories"
+           asp-action="Manage"
+           class="link-back">
+            ← Manage Categories
+        </a>
+
+        <h1>Edit Category</h1>
+
+    </div>
+
+</section>
+
+
+<section class="section"
+         style="padding-top:20px;">
+
+    <div class="wrap">
+
+        <div class="form-card"
+             style="max-width:700px;">
+
+            <form asp-controller="Categories"
+                  asp-action="Edit"
+                  asp-route-id="@Model.Id"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <input asp-for="Id"
+                       type="hidden" />
+
+                <input asp-for="ExistingImagePath"
+                       type="hidden" />
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger">
+                </div>
+
+
+                <!-- NAME -->
+                <div class="field">
+
+                    <label asp-for="Name"></label>
+
+                    <input asp-for="Name" />
+
+                    <span asp-validation-for="Name"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+                <div class="field">
+
+                    <label asp-for="Description"></label>
+
+                    <textarea asp-for="Description"
+                              rows="5"></textarea>
+
+                    <span asp-validation-for="Description"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <!-- CURRENT IMAGE -->
+                <div class="field">
+
+                    <label>
+                        Current Image
+                    </label>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.ExistingImagePath))
+                    {
+                        <img src="@Model.ExistingImagePath"
+                             alt="@Model.Name"
+                             style="
+                        width:140px;
+                        height:140px;
+                        object-fit:cover;
+                        border-radius:var(--radius-sm);
+                        margin-bottom:12px;" />
+                    }
+                    else
+                    {
+                        <p style="color:var(--ink-soft);">
+                            No image uploaded.
+                        </p>
+                    }
+
+                </div>
+
+
+                <!-- REPLACE IMAGE -->
+                <div class="field">
+
+                    <label asp-for="ImageFile">
+                        Replace Image
+                    </label>
+
+                    <input asp-for="ImageFile"
+                           type="file"
+                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+
+                    <span asp-validation-for="ImageFile"
+                          class="text-danger">
+                    </span>
+
+                    <small style="color:var(--ink-soft);">
+                        Leave empty to keep the current image.
+                        JPG, JPEG, PNG or WEBP — maximum 5 MB.
+                    </small>
+
+                </div>
+
+
+                <!-- STATUS -->
+                <div class="field">
+
+                    <label style="
+                        display:flex;
+                        align-items:center;
+                        gap:10px;">
+
+                        <input asp-for="IsActive"
+                               style="width:auto;" />
+
+                        Active Category
+
+                    </label>
+
+                </div>
+
+
+                <!-- ACTIONS -->
+                <div style="
+                    display:flex;
+                    gap:10px;
+                    margin-top:20px;">
+
+                    <button class="btn"
+                            type="submit">
+                        Save Changes
+                    </button>
+
+
+                    <a asp-controller="Categories"
+                       asp-action="Manage"
+                       class="btn btn--ghost">
+                        Cancel
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,174 @@
+@model BabyToddlerEssentials.ViewModels.Categories.CategoriesIndexViewModel
+
+@{
+    ViewData["Title"] = "Categories";
+    ViewData["Page"] = "categories";
+}
+
+<section class="about-hero">
+
+    <div class="wrap">
+
+        <span class="eyebrow">
+            🧸 Categories
+        </span>
+
+        <h1>
+            Find essentials for every little stage
+        </h1>
+
+        <p>
+            Browse our baby and toddler collections
+            or search for the category you need.
+        </p>
+
+    </div>
+
+</section>
+
+
+<section class="section">
+
+    <div class="wrap">
+
+
+        <!-- SEARCH -->
+
+        <form asp-controller="Categories"
+              asp-action="Index"
+              method="get"
+              class="shop-topbar reveal">
+
+            <div class="search-box">
+
+                <span>
+                    🔍
+                </span>
+
+                <input type="search"
+                       name="search"
+                       value="@Model.SearchTerm"
+                       placeholder="Search categories..."
+                       aria-label="Search categories" />
+
+            </div>
+
+
+            <button class="btn btn--sky"
+                    type="submit">
+
+                Search
+
+            </button>
+
+
+            @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+            {
+                <a asp-controller="Categories"
+                   asp-action="Index"
+                   class="btn btn--ghost">
+
+                    Clear
+
+                </a>
+            }
+
+        </form>
+
+
+
+        <!-- RESULTS -->
+        @if (Model.Categories.Any())
+        {
+            <div class="cat-grid reveal">
+
+                @foreach (var category in Model.Categories)
+                {
+                    <a asp-controller="Categories"
+                       asp-action="Details"
+                       asp-route-id="@category.Id"
+                       class="cat-tile">
+
+
+                        @if (!string.IsNullOrWhiteSpace(category.ImagePath))
+                        {
+                            <img src="@category.ImagePath"
+                                 alt="@category.Name"
+                                 style="
+                            width:64px;
+                            height:64px;
+                            object-fit:cover;
+                            border-radius:16px;
+                            margin:0 auto 10px;" />
+                        }
+                        else
+                        {
+                            <div class="emoji">
+                                🧸
+                            </div>
+                        }
+
+
+                        <div class="name">
+                            @category.Name
+                        </div>
+
+
+                        <div style="
+                            margin-top:5px;
+                            font-size:.82rem;
+                            color:var(--ink-soft);">
+
+                            @category.ProductCount
+                            @(category.ProductCount == 1
+                                ? "product"
+                                : "products")
+
+                        </div>
+
+                    </a>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="empty reveal">
+
+                <div class="big">
+                    🔍
+                </div>
+
+                <h3>
+                    No categories found
+                </h3>
+
+
+                @if (!string.IsNullOrWhiteSpace(Model.SearchTerm))
+                {
+                    <p>
+                        No category matches
+                        "<strong>@Model.SearchTerm</strong>".
+                    </p>
+
+                    <a asp-controller="Categories"
+                       asp-action="Index"
+                       class="btn btn--ghost">
+
+                        Clear search
+
+                    </a>
+                }
+                else
+                {
+                    <p>
+                        Categories will appear here once they are added.
+                    </p>
+                }
+
+            </div>
+        }
+
+    </div>
+
+</section>

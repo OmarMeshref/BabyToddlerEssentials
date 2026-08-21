@@ -106,9 +106,8 @@
 
                 <!-- Enable after ProductsController -->
                 <li>
-                    <a href="#"
-                       class="future-link"
-                       aria-disabled="true">
+                    <a asp-controller="Product" asp-action="Index" 
+                    class="@(currentPage == "shop" || currentPage == "product" ? "active" : "")">
 
                         Shop
 
@@ -118,9 +117,7 @@
 
                 <!-- Enable after CategoryController -->
                 <li>
-                    <a href="#"
-                       class="future-link"
-                       aria-disabled="true">
+                    <a asp-controller="Categories" asp-action="Index" class="@(currentPage == "categories" ? "active" : "")">
 
                         Categories
 
@@ -315,18 +312,14 @@
                 </a>
 
 
-                <a href="#"
-                   class="future-link"
-                   aria-disabled="true">
+                <a asp-controller="Product" asp-action="Index">
 
                     Shop
 
                 </a>
 
 
-                <a href="#"
-                   class="future-link"
-                   aria-disabled="true">
+                <a asp-controller="Categories" asp-action="Index">
 
                     Categories
 
@@ -395,13 +388,17 @@
 
                 <h4>Shop</h4>
 
-                <span class="footer-future">
-                    Products
-                </span>
+                <a asp-controller="Product" asp-action="Index">
 
-                <span class="footer-future">
+                    Products
+
+                </a>
+
+                <a asp-controller="Categories" asp-action="Index">
+
                     Categories
-                </span>
+
+                </a>
 
                 <span class="footer-future">
                     Wishlist

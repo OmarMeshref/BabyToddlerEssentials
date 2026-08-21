@@ -1,0 +1,131 @@
+@model BabyToddlerEssentials.ViewModels.Categories.CategoriesFormViewModel
+
+@{
+    ViewData["Title"] = "Create Category";
+    ViewData["Page"] = "admin";
+}
+
+<section class="page-head">
+
+    <div class="wrap">
+
+        <a asp-controller="Categories"
+           asp-action="Manage"
+           class="link-back">
+
+            ← Manage Categories
+
+        </a>
+
+        <h1>
+            Create Category
+        </h1>
+
+    </div>
+
+</section>
+
+
+<section class="section"
+         style="padding-top:20px;">
+
+    <div class="wrap">
+
+        <div class="form-card"
+             style="max-width:700px;">
+
+            <form asp-controller="Categories"
+                  asp-action="Create"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger">
+                </div>
+
+
+                <div class="field">
+
+                    <label asp-for="Name"></label>
+
+                    <input asp-for="Name"
+                           placeholder="e.g. Feeding" />
+
+                    <span asp-validation-for="Name"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label asp-for="Description"></label>
+
+                    <textarea asp-for="Description"
+                              rows="5"
+                              placeholder="Short description...">
+                    </textarea>
+
+                    <span asp-validation-for="Description"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label asp-for="ImageFile"></label>
+
+                    <input asp-for="ImageFile"
+                           type="file"
+                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+
+                    <span asp-validation-for="ImageFile"
+                          class="text-danger">
+                    </span>
+
+                    <small style="color:var(--ink-soft);">
+                        JPG, PNG or WEBP · Maximum 5 MB
+                    </small>
+
+                </div>
+
+
+                <div style="
+                    display:flex;
+                    gap:10px;
+                    margin-top:20px;">
+
+                    <button class="btn"
+                            type="submit">
+
+                        Create Category
+
+                    </button>
+
+
+                    <a asp-controller="Categories"
+                       asp-action="Manage"
+                       class="btn btn--ghost">
+
+                        Cancel
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+@section Scripts
+{
+    <partial name="_ValidationScriptsPartial" />
+}
