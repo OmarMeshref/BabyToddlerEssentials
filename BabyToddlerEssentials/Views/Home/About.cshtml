@@ -1,0 +1,415 @@
+﻿@model BabyToddlerEssentials.ViewModels.Home.AboutViewModel
+
+@{
+    ViewData["Title"] = "About";
+    ViewData["Page"] = "about";
+}
+
+<!-- =========================================
+     ABOUT HERO
+     ========================================= -->
+
+<section class="about-hero">
+
+    <div class="wrap">
+
+        <span class="eyebrow">
+            🍬 About Jellybean
+        </span>
+
+        <h1>
+            Little things for
+            <span style="color:var(--pink-deep)">little ones</span>.
+        </h1>
+
+        <p>
+            Baby & Toddler Essentials is an online store designed
+            to bring everyday baby and toddler products together
+            in one simple, organized shopping experience.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================
+     OUR STORY
+     ========================================= -->
+
+<section class="section">
+
+    <div class="wrap">
+
+        <div class="section-head reveal">
+
+            <span class="eyebrow">
+                Our story
+            </span>
+
+            <h2>
+                One place for the little things that matter
+            </h2>
+
+            <p>
+                Shopping for babies and toddlers can mean searching
+                across many different product types.
+                Our goal is to bring those essentials together
+                and make finding what you need easier.
+            </p>
+
+        </div>
+
+
+        <div class="value-grid reveal">
+
+            <article class="value-card">
+
+                <div class="emoji">
+                    🧸
+                </div>
+
+                <h3>
+                    For Every Stage
+                </h3>
+
+                <p>
+                    From feeding and clothing to care and playtime,
+                    our store is organized around everyday baby
+                    and toddler needs.
+                </p>
+
+            </article>
+
+
+            <article class="value-card">
+
+                <div class="emoji">
+                    💖
+                </div>
+
+                <h3>
+                    Simple Shopping
+                </h3>
+
+                <p>
+                    Browse categories, discover products, save
+                    favorites and manage your shopping experience
+                    from one place.
+                </p>
+
+            </article>
+
+
+            <article class="value-card">
+
+                <div class="emoji">
+                    ⭐
+                </div>
+
+                <h3>
+                    Community Feedback
+                </h3>
+
+                <p>
+                    Ratings, reviews and testimonials help families
+                    discover products through real customer
+                    experiences.
+                </p>
+
+            </article>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================
+     STORE STATS
+     ========================================= -->
+
+<section class="section"
+         style="padding-top:0">
+
+    <div class="wrap">
+
+        <div class="stat-band reveal">
+
+            <div>
+
+                <b>
+                    @Model.ActiveProductsCount
+                </b>
+
+                <span>
+                    Active Products
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <b>
+                    @Model.ActiveCategoriesCount
+                </b>
+
+                <span>
+                    Categories
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <b>
+                    1–5
+                </b>
+
+                <span>
+                    Rating System
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <b>
+                    💖
+                </b>
+
+                <span>
+                    Wishlist & Favorites
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================
+     VALUES
+     ========================================= -->
+
+<section class="section">
+
+    <div class="wrap">
+
+        <div class="section-head reveal">
+
+            <span class="eyebrow">
+                What we value
+            </span>
+
+            <h2>
+                Built around a better shopping experience
+            </h2>
+
+            <p>
+                Simple features, clear information and useful
+                customer feedback are at the heart of the store.
+            </p>
+
+        </div>
+
+
+        <div class="value-grid reveal">
+
+            <article class="value-card">
+
+                <div class="emoji">
+                    ✨
+                </div>
+
+                <h3>
+                    Simplicity
+                </h3>
+
+                <p>
+                    Products and categories should be easy to find,
+                    understand and purchase.
+                </p>
+
+            </article>
+
+
+            <article class="value-card">
+
+                <div class="emoji">
+                    🛡️
+                </div>
+
+                <h3>
+                    Trust
+                </h3>
+
+                <p>
+                    Reviews and testimonials are moderated before
+                    they become publicly visible.
+                </p>
+
+            </article>
+
+
+            <article class="value-card">
+
+                <div class="emoji">
+                    🛍️
+                </div>
+
+                <h3>
+                    Convenience
+                </h3>
+
+                <p>
+                    Cart, wishlist, checkout, order history and
+                    invoices create one connected experience.
+                </p>
+
+            </article>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================
+     TESTIMONIALS
+     ========================================= -->
+@if (Model.Testimonials.Any())
+{
+    <section class="section"
+             style="padding-top:0">
+
+        <div class="wrap">
+
+            <div class="section-head reveal">
+
+                <span class="eyebrow">
+                    Customer stories
+                </span>
+
+                <h2>
+                    Experiences shared by our community
+                </h2>
+
+                <p>
+                    Only approved testimonials are displayed publicly.
+                </p>
+
+            </div>
+
+
+            <div class="testi-grid reveal">
+
+                @foreach (var testimonial in Model.Testimonials)
+                {
+                    var customerName =
+                        string.IsNullOrWhiteSpace(testimonial.CustomerName)
+                            ? "Customer"
+                            : testimonial.CustomerName;
+
+                    <figure class="testi-card">
+
+                        <blockquote>
+                            "@testimonial.Message"
+                        </blockquote>
+
+
+                        <figcaption>
+
+                            <span class="testi-avatar">
+
+                                @customerName
+                                .Substring(0, 1)
+                                .ToUpper()
+
+                            </span>
+
+
+                            <span>
+
+                                <b>
+                                    @customerName
+                                </b>
+
+                                <br />
+
+                                <span class="testi-sub">
+                                    Customer testimonial
+                                </span>
+
+                            </span>
+
+                        </figcaption>
+
+                    </figure>
+                }
+
+            </div>
+
+        </div>
+
+    </section>
+}
+
+
+<!-- =========================================
+     FINAL CTA
+     ========================================= -->
+
+<section class="newsletter">
+
+    <span class="scallop">
+
+        <svg viewBox="0 0 1200 34"
+             preserveAspectRatio="none">
+
+            <path d="M0,0 V22 C60,22 60,34 120,34 S180,22 240,22 300,34 360,34 420,22 480,22 540,34 600,34 660,22 720,22 780,34 840,34 900,22 960,22 1020,34 1080,34 1140,22 1200,22 V0 Z"
+                  fill="#FFF7FB" />
+
+        </svg>
+
+    </span>
+
+
+    <div class="news-card reveal">
+
+        <span class="eyebrow">
+            Explore Jellybean
+        </span>
+
+        <h2>
+            Everything your little one needs,
+            all in one place
+        </h2>
+
+        <p style="color:var(--ink-soft);
+            max-width:40ch;
+            margin:0 auto 22px">
+
+            Browse our growing collection of baby and toddler
+            essentials.
+
+        </p>
+
+
+        <!-- Activate when ProductsController is ready -->
+
+        <span class="btn">
+            Explore products
+        </span>
+
+    </div>
+
+</section>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jellybean · Little things for little ones</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="index.html">
+  <header id="site-header"></header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <span class="eyebrow">🍬 New this season</span>
+          <h1>Little things for <span class="hi-pink">little</span> <span class="hi-sky">ones</span>.</h1>
+          <p class="lead">Thoughtfully chosen toys, clothes and nursery treats — safety-tested and made to be loved.</p>
+          <div class="hero-cta">
+            <a class="btn" href="shop.html">Shop the collection</a>
+            <a class="btn btn--ghost" href="shop.html?cat=toys">Browse toys</a>
+          </div>
+          <div class="hero-trust">
+            <div><b>12k+</b> happy families</div>
+            <div><b>100%</b> safety-tested</div>
+            <div><b>Free</b> shipping over $35</div>
+          </div>
+        </div>
+        <div class="hero-art">
+          <div class="hero-blob"></div>
+          <div class="hero-emoji">🧸</div>
+          <span class="spark s1">⭐</span>
+          <span class="spark s2">🎈</span>
+          <span class="spark s3">🌈</span>
+          <span class="spark s4">🍭</span>
+        </div>
+      </div>
+      <span class="scallop"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><path d="M0,34 V12 C60,12 60,0 120,0 S180,12 240,12 300,0 360,0 420,12 480,12 540,0 600,0 660,12 720,12 780,0 840,0 900,12 960,12 1020,0 1080,0 1140,12 1200,12 V34 Z" fill="#FFF7FB"/></svg></span>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Shop by category</span>
+          <h2>Everything for every stage</h2>
+          <p>From first cuddles to big-kid adventures.</p>
+        </div>
+        <div class="cat-grid reveal" id="cat-grid"></div>
+      </div>
+    </section>
+
+    <!-- FEATURED -->
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <span class="eyebrow">Loved by families</span>
+          <h2>Bestselling treats</h2>
+          <p>The little favorites our families reach for again and again.</p>
+        </div>
+        <div class="product-grid reveal" id="featured-grid"></div>
+        <div style="text-align:center;margin-top:34px" class="reveal">
+          <a class="btn btn--sky" href="shop.html">See all products →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROMISE -->
+    <section class="section" style="padding-top:0">
+      <div class="wrap">
+        <div class="stat-band reveal">
+          <div><b>🌱</b><span>Non-toxic materials</span></div>
+          <div><b>🔬</b><span>Lab safety-tested</span></div>
+          <div><b>♻️</b><span>Planet-kind packaging</span></div>
+          <div><b>💌</b><span>30-day happy returns</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEWSLETTER -->
+    <section class="newsletter">
+      <span class="scallop"><svg viewBox="0 0 1200 34" preserveAspectRatio="none"><path d="M0,0 V22 C60,22 60,34 120,34 S180,22 240,22 300,34 360,34 420,22 480,22 540,34 600,34 660,22 720,22 780,34 840,34 900,22 960,22 1020,34 1080,34 1140,22 1200,22 V0 Z" fill="#FFF7FB"/></svg></span>
+      <div class="news-card">
+        <span class="eyebrow">Join the club</span>
+        <h2>Get 10% off your first treat</h2>
+        <p style="color:var(--ink-soft);max-width:40ch;margin:0 auto">Playful ideas, new arrivals and members-only deals — never any spam.</p>
+        <form class="news-form" id="news-form">
+          <input type="email" placeholder="you@email.com" aria-label="Email address" required>
+          <button class="btn" type="submit">Sign me up</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="data.js"></script>
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+  <script src="pages.js"></script>
+</body>
+</html>

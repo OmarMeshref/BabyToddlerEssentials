@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact · Jellybean</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="contact.html">
+  <header id="site-header"></header>
+
+  <main>
+    <div class="wrap page-head">
+      <span class="eyebrow">Say hello</span>
+      <h1>We'd love to hear from you</h1>
+    </div>
+
+    <div class="wrap">
+      <div class="contact-grid">
+        <div class="contact-side">
+          <div class="contact-chip"><span class="emoji">💬</span><div><b>Chat with us</b><br><span style="color:var(--ink-soft)">Mon–Fri, 9am–5pm</span></div></div>
+          <div class="contact-chip"><span class="emoji">📧</span><div><b>Email</b><br><span style="color:var(--ink-soft)">hello@jellybean.demo</span></div></div>
+          <div class="contact-chip"><span class="emoji">📦</span><div><b>Shipping &amp; returns</b><br><span style="color:var(--ink-soft)">Free over $35 · 30-day returns</span></div></div>
+          <div class="contact-chip"><span class="emoji">🏡</span><div><b>Studio</b><br><span style="color:var(--ink-soft)">12 Buttercup Lane, Springfield</span></div></div>
+        </div>
+
+        <div class="form-card">
+          <h3>Send a message</h3>
+          <form id="contact-form">
+            <div class="field-grid">
+              <div class="field"><label>Name</label><input data-req id="c-name" placeholder="Your name"><span class="err">Required</span></div>
+              <div class="field"><label>Email</label><input data-req data-email id="c-email" type="email" placeholder="you@email.com"><span class="err">Enter a valid email</span></div>
+            </div>
+            <div class="field"><label>Subject</label>
+              <select id="c-subject">
+                <option>General question</option>
+                <option>Order help</option>
+                <option>Product safety</option>
+                <option>Returns &amp; refunds</option>
+                <option>Partnerships</option>
+              </select>
+            </div>
+            <div class="field"><label>Message</label><textarea data-req id="c-msg" rows="5" placeholder="How can we help?"></textarea><span class="err">Required</span></div>
+            <button class="btn btn--block" type="submit">Send message ✉️</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="wrap" style="max-width:760px">
+        <div class="section-head">
+          <span class="eyebrow">Quick answers</span>
+          <h2>Frequently asked</h2>
+        </div>
+        <div class="form-card"><h3>🚚 How fast is shipping?</h3><p style="color:var(--ink-soft);margin:0">Orders ship in 1–2 business days, and it's free on everything over $35.</p></div>
+        <div class="form-card"><h3>↩️ What's your return policy?</h3><p style="color:var(--ink-soft);margin:0">Not quite right? Send it back within 30 days for a full refund — no fuss.</p></div>
+        <div class="form-card"><h3>🔬 Are products safety-tested?</h3><p style="color:var(--ink-soft);margin:0">Every item is independently lab-tested and meets or exceeds toy-safety standards.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="data.js"></script>
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+  <script src="pages.js"></script>
+</body>
+</html>

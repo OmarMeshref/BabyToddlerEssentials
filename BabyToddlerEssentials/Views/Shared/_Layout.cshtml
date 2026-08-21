@@ -1,77 +1,520 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Identity
+@using BabyToddlerEssentials.Models
+
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+
+@{
+    var currentPage = ViewData["Page"]?.ToString();
+
+    ApplicationUser? currentUser = null;
+
+    if (SignInManager.IsSignedIn(User))
+    {
+        currentUser = await UserManager.GetUserAsync(User);
+    }
+
+    var displayName =
+        !string.IsNullOrWhiteSpace(currentUser?.FullName)
+            ? currentUser.FullName
+            : currentUser?.Email ?? User.Identity?.Name ?? "Account";
+}
+
+<!DOCTYPE html>
+
 <html lang="en">
+
 <head>
+
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
     <title>@ViewData["Title"] - BabyToddlerEssentials</title>
-    <script type="importmap"></script>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/BabyToddlerEssentials.styles.css" asp-append-version="true" />
+
+
+    <!-- Existing project styles -->
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/BabyToddlerEssentials.styles.css"
+          asp-append-version="true" />
+
+
+    <!-- Jellybean Fonts -->
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin="anonymous">
+
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap"
+          rel="stylesheet">
+
+
+    <!-- IMPORTANT: Template CSS last -->
+    <link rel="stylesheet"
+          href="~/template/styles.css"
+          asp-append-version="true">
+
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">BabyToddlerEssentials</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="Home"
-                               asp-action="Index">
-                                Home
-                            </a>
-                        </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-controller="Home"
-                               asp-action="Privacy">
-                                Privacy
-                            </a>
-                        </li>
+<body data-page="@currentPage">
 
-                        @if (User.Identity?.IsAuthenticated == true &&
-                             User.IsInRole("Admin"))
+
+    <!-- =========================
+         HEADER
+         ========================= -->
+
+    <header class="site-header">
+
+        <nav class="nav">
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="brand">
+
+                <span class="bean">
+                    🍬
+                </span>
+
+                Jellybean
+
+            </a>
+
+
+            <ul class="nav-links">
+
+                <li>
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="@(currentPage == "index" ? "active" : "")">
+
+                        Home
+
+                    </a>
+                </li>
+
+
+                <!-- Enable after ProductsController -->
+                <li>
+                    <a href="#"
+                       class="future-link"
+                       aria-disabled="true">
+
+                        Shop
+
+                    </a>
+                </li>
+
+
+                <!-- Enable after CategoryController -->
+                <li>
+                    <a href="#"
+                       class="future-link"
+                       aria-disabled="true">
+
+                        Categories
+
+                    </a>
+                </li>
+
+
+                <li>
+                    <a asp-controller="Home"
+                       asp-action="About"
+                       class="@(currentPage == "about" ? "active" : "")">
+
+                        About
+
+                    </a>
+                </li>
+
+            </ul>
+
+
+            <div class="nav-actions">
+
+
+                <!-- ACCOUNT -->
+
+                <div class="account"
+                     id="account">
+
+                    <button class="icon-btn"
+                            id="account-toggle"
+                            type="button"
+                            aria-label="Account"
+                            aria-haspopup="true">
+
+                        👤
+
+                    </button>
+
+
+                    <div class="account-menu"
+                         id="account-menu">
+
+
+                        @if (SignInManager.IsSignedIn(User))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-controller="Admin"
+                            <div class="account-hi">
+
+                                Hi, @displayName 👋
+
+                            </div>
+
+
+                            <a asp-controller="User"
+                               asp-action="Profile">
+
+                                👤 Profile
+
+                            </a>
+
+
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-controller="Admin"
                                    asp-action="Index">
-                                    Admin Dashboard
+
+                                    ⚙️ Admin Dashboard
+
                                 </a>
-                            </li>
+                            }
+
+
+                            <!-- Enable when Orders feature exists -->
+
+                            <span class="account-future">
+                                📦 Order history
+                            </span>
+
+
+                            <form asp-area="Identity"
+                                  asp-page="/Account/Logout"
+                                  asp-route-returnUrl="@Url.Action(
+                                      "Index",
+                                      "Home",
+                                      new { area = "" })"
+                                  method="post">
+
+                                <button type="submit">
+
+                                    ↩︎ Log out
+
+                                </button>
+
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="account-hi">
+
+                                Welcome!
+
+                            </div>
+
+
+                            <a asp-area="Identity"
+                               asp-page="/Account/Login">
+
+                                🔑 Log in
+
+                            </a>
+
+
+                            <a asp-area="Identity"
+                               asp-page="/Account/Register">
+
+                                ✨ Create account
+
+                            </a>
                         }
 
-                    </ul>
+                    </div>
 
-                    <partial name="_LoginPartial" />
                 </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - BabyToddlerEssentials - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+
+                <!-- Wishlist: enable later -->
+
+                <span class="icon-btn future-icon"
+                      title="Wishlist coming soon"
+                      aria-hidden="true">
+
+                    💖
+
+                </span>
+
+
+                <!-- Cart: enable later -->
+
+                <span class="icon-btn future-icon"
+                      title="Shopping cart coming soon"
+                      aria-hidden="true">
+
+                    🛍️
+
+                </span>
+
+
+                <!-- MOBILE MENU -->
+
+                <button class="icon-btn hamburger"
+                        id="drawer-open"
+                        type="button"
+                        aria-label="Menu">
+
+                    ☰
+
+                </button>
+
+            </div>
+
+        </nav>
+
+
+        <!-- =========================
+             MOBILE DRAWER
+             ========================= -->
+
+        <div class="drawer"
+             id="drawer">
+
+            <div class="drawer-bg"
+                 id="drawer-bg">
+            </div>
+
+
+            <div class="drawer-panel">
+
+                <button class="drawer-close"
+                        id="drawer-close"
+                        type="button"
+                        aria-label="Close menu">
+
+                    ✕
+
+                </button>
+
+
+                <a asp-controller="Home"
+                   asp-action="Index">
+
+                    Home
+
+                </a>
+
+
+                <a href="#"
+                   class="future-link"
+                   aria-disabled="true">
+
+                    Shop
+
+                </a>
+
+
+                <a href="#"
+                   class="future-link"
+                   aria-disabled="true">
+
+                    Categories
+
+                </a>
+
+
+                <a asp-controller="Home"
+                   asp-action="About">
+
+                    About
+
+                </a>
+
+            </div>
+
         </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         PAGE CONTENT
+         ========================= -->
+
+    <main>
+
+        @RenderBody()
+
+    </main>
+
+
+
+    <!-- =========================
+         FOOTER
+         ========================= -->
+
+    <footer class="site-footer">
+
+        <div class="wrap foot-grid">
+
+
+            <div>
+
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   class="brand">
+
+                    <span class="bean">
+                        🍬
+                    </span>
+
+                    Jellybean
+
+                </a>
+
+                <p>
+                    Little things for little ones —
+                    baby and toddler essentials in one place.
+                </p>
+
+            </div>
+
+
+            <div class="foot-col">
+
+                <h4>Shop</h4>
+
+                <span class="footer-future">
+                    Products
+                </span>
+
+                <span class="footer-future">
+                    Categories
+                </span>
+
+                <span class="footer-future">
+                    Wishlist
+                </span>
+
+                <span class="footer-future">
+                    Shopping Cart
+                </span>
+
+            </div>
+
+
+            <div class="foot-col">
+
+                <h4>Company</h4>
+
+                <a asp-controller="Home"
+                   asp-action="About">
+
+                    Our story
+
+                </a>
+
+                <a asp-controller="Home"
+                   asp-action="Index">
+
+                    Home
+
+                </a>
+
+            </div>
+
+
+            <div class="foot-col">
+
+                <h4>Account</h4>
+
+
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a asp-controller="User"
+                       asp-action="Profile">
+
+                        Profile
+
+                    </a>
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-controller="Admin"
+                           asp-action="Index">
+
+                            Admin Dashboard
+
+                        </a>
+                    }
+                }
+                else
+                {
+                    <a asp-area="Identity"
+                       asp-page="/Account/Login">
+
+                        Log in
+
+                    </a>
+
+                    <a asp-area="Identity"
+                       asp-page="/Account/Register">
+
+                        Create account
+
+                    </a>
+                }
+
+            </div>
+
+        </div>
+
+
+        <div class="foot-bottom wrap">
+
+            © @DateTime.Now.Year Jellybean ·
+            Baby & Toddler Essentials
+
+        </div>
+
     </footer>
+
+
+
+    <!-- =========================
+         SCRIPTS
+         ========================= -->
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="~/js/site.js"
+            asp-append-version="true"></script>
+
+
+    <!-- Safe global template behavior only -->
+    <script src="~/template/js/template-ui.js"
+            asp-append-version="true"></script>
+
+
+    <!-- Developers can add page-specific JS
+         without touching Layout -->
+    @await RenderSectionAsync(
+        "Scripts",
+        required: false)
+
 </body>
+
 </html>

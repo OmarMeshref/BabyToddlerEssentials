@@ -1,8 +1,513 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model BabyToddlerEssentials.ViewModels.Home.HomeIndexViewModel
+
+@{
+    ViewData["Title"] = "Home";
+    ViewData["Page"] = "index";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- =========================================
+     HERO
+     ========================================= -->
+
+<section class="hero">
+
+    <div class="hero-grid">
+
+        <div>
+
+            <span class="eyebrow">
+                🍬 Baby & Toddler Essentials
+            </span>
+
+            <h1>
+                Little things for
+                <span class="hi-pink">little</span>
+                <span class="hi-sky">ones</span>.
+            </h1>
+
+            <p class="lead">
+                Discover baby and toddler essentials,
+                thoughtfully organized in one simple shopping experience.
+            </p>
+
+
+            <div class="hero-cta">
+
+                <!-- Activate when ProductsController is ready -->
+                <span class="btn">
+                    Shop the collection
+                </span>
+
+                <!-- Activate when CategoryController is ready -->
+                <span class="btn btn--ghost">
+                    Browse categories
+                </span>
+
+            </div>
+
+
+            <div class="hero-trust">
+
+                <div>
+                    <b>@Model.ActiveProductsCount</b>
+                    Products
+                </div>
+
+                <div>
+                    <b>@Model.ActiveCategoriesCount</b>
+                    Categories
+                </div>
+
+                <div>
+                    <b>1–5</b>
+                    Rating system
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="hero-art">
+
+            <div class="hero-blob"></div>
+
+            <div class="hero-emoji">
+                🧸
+            </div>
+
+            <span class="spark s1">⭐</span>
+            <span class="spark s2">🎈</span>
+            <span class="spark s3">🌈</span>
+            <span class="spark s4">🍭</span>
+
+        </div>
+
+    </div>
+
+
+    <span class="scallop">
+
+        <svg viewBox="0 0 1200 34"
+             preserveAspectRatio="none">
+
+            <path d="M0,34 V12 C60,12 60,0 120,0 S180,12 240,12 300,0 360,0 420,12 480,12 540,0 600,0 660,12 720,12 780,0 840,0 900,12 960,12 1020,0 1080,0 1140,12 1200,12 V34 Z"
+                  fill="#FFF7FB" />
+
+        </svg>
+
+    </span>
+
+</section>
+
+
+
+<!-- =========================================
+     CATEGORIES
+     ========================================= -->
+
+<section class="section">
+
+    <div class="wrap">
+
+        <div class="section-head reveal">
+
+            <span class="eyebrow">
+                Shop by category
+            </span>
+
+            <h2>
+                Everything for every stage
+            </h2>
+
+            <p>
+                Browse our available baby and toddler collections.
+            </p>
+
+        </div>
+
+
+        @if (Model.Categories.Any())
+        {
+            <div class="cat-grid reveal">
+
+                @foreach (var category in Model.Categories)
+                {
+                    <!-- Activate link when CategoryController is ready -->
+
+                    <div class="cat-tile">
+
+                        <div class="emoji">
+                            🧸
+                        </div>
+
+                        <div class="name">
+                            @category.Name
+                        </div>
+
+                    </div>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="empty reveal">
+
+                <div class="big">
+                    🧺
+                </div>
+
+                <h3>
+                    Categories are coming soon
+                </h3>
+
+                <p>
+                    Our collections will appear here once categories
+                    are added.
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     PRODUCTS
+     ========================================= -->
+
+<section class="section"
+         style="padding-top:0">
+
+    <div class="wrap">
+
+
+        <div class="section-head reveal">
+
+            <span class="eyebrow">
+                Discover
+            </span>
+
+            <h2>
+                Latest products
+            </h2>
+
+            <p>
+                Take a look at some of the newest essentials
+                available in our store.
+            </p>
+
+        </div>
+
+
+        @if (Model.Products.Any())
+        {
+            <div class="product-grid reveal">
+
+                @foreach (var product in Model.Products)
+                {
+                    <article class="card">
+
+
+                        <div class="card-media bg-a">
+
+                            @if (!string.IsNullOrWhiteSpace(product.ImagePath))
+                            {
+                                <img src="@product.ImagePath"
+                                     alt="@product.Name"
+                                     class="template-product-image" />
+                            }
+                            else
+                            {
+                                <span class="emoji">
+                                    🧸
+                                </span>
+                            }
+
+                        </div>
+
+
+                        <div class="card-body">
+
+
+                            <span class="card-cat">
+                                @product.CategoryName
+                            </span>
+
+
+                            <h3 class="card-title">
+                                @product.Name
+                            </h3>
+
+
+                            @if (product.StockQuantity <= 0)
+                            {
+                                <div class="card-rating">
+                                    Out of stock
+                                </div>
+                            }
+                            else if (product.StockQuantity <= 5)
+                            {
+                                <div class="card-rating">
+                                    Only @product.StockQuantity left
+                                </div>
+                            }
+
+
+                            <div class="card-foot">
+
+                                <div class="price">
+
+                                    @product.Price.ToString("0.00") JOD
+
+                                </div>
+
+
+                                <!-- Becomes Add To Cart later -->
+                                <button class="add-btn"
+                                        type="button"
+                                        disabled
+                                        title="Cart coming soon">
+
+                                    +
+
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </article>
+                }
+
+            </div>
+
+
+            <div style="text-align:center;
+                margin-top:34px"
+                 class="reveal">
+
+                <!-- Activate Products link later -->
+
+                <span class="btn btn--sky">
+                    See all products →
+                </span>
+
+            </div>
+        }
+        else
+        {
+            <div class="empty reveal">
+
+                <div class="big">
+                    🛍️
+                </div>
+
+                <h3>
+                    Products are coming soon
+                </h3>
+
+                <p>
+                    Products added to the store will automatically
+                    appear here.
+                </p>
+
+            </div>
+        }
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     STORE FEATURES
+     ========================================= -->
+
+<section class="section"
+         style="padding-top:0">
+
+    <div class="wrap">
+
+        <div class="stat-band reveal">
+
+            <div>
+
+                <b>🛍️</b>
+
+                <span>
+                    Guest shopping cart
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <b>💖</b>
+
+                <span>
+                    Personal wishlist
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <b>⭐</b>
+
+                <span>
+                    Customer reviews
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <b>📦</b>
+
+                <span>
+                    Orders & invoices
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================================
+     TESTIMONIALS
+     ========================================= -->
+@if (Model.Testimonials.Any())
+{
+    <section class="section">
+
+        <div class="wrap">
+
+
+            <div class="section-head reveal">
+
+                <span class="eyebrow">
+                    Customer stories
+                </span>
+
+                <h2>
+                    What our customers say
+                </h2>
+
+                <p>
+                    Testimonials approved before being displayed publicly.
+                </p>
+
+            </div>
+
+
+            <div class="testi-grid reveal">
+
+                @foreach (var testimonial in Model.Testimonials)
+                {
+                    <figure class="testi-card">
+
+
+                        <blockquote>
+                            "@testimonial.Message"
+                        </blockquote>
+
+
+                        <figcaption>
+
+                            <span class="testi-avatar">
+                                🙂
+                            </span>
+
+
+                            <span>
+
+                                <b>
+                                    @testimonial.CustomerName
+                                </b>
+
+                                <br />
+
+                                <span class="testi-sub">
+                                    Customer testimonial
+                                </span>
+
+                            </span>
+
+                        </figcaption>
+
+                    </figure>
+                }
+
+            </div>
+
+        </div>
+
+    </section>
+}
+
+
+
+<!-- =========================================
+     FINAL CTA
+     Uses original Newsletter styling,
+     but no fake Newsletter feature.
+     ========================================= -->
+
+<section class="newsletter">
+
+    <span class="scallop">
+
+        <svg viewBox="0 0 1200 34"
+             preserveAspectRatio="none">
+
+            <path d="M0,0 V22 C60,22 60,34 120,34 S180,22 240,22 300,34 360,34 420,22 480,22 540,34 600,34 660,22 720,22 780,34 840,34 900,22 960,22 1020,34 1080,34 1140,22 1200,22 V0 Z"
+                  fill="#FFF7FB" />
+
+        </svg>
+
+    </span>
+
+
+    <div class="news-card reveal">
+
+        <span class="eyebrow">
+            Ready to explore?
+        </span>
+
+        <h2>
+            Find something special for your little one
+        </h2>
+
+        <p style="color:var(--ink-soft);
+            max-width:40ch;
+            margin:0 auto 22px">
+
+            Browse baby and toddler essentials for every
+            little stage.
+
+        </p>
+
+
+        <!-- Activate when ProductsController exists -->
+
+        <span class="btn">
+            Explore products
+        </span>
+
+    </div>
+
+</section>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop · Jellybean</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:ital,wght@0,400;0,600;0,700;0,800;1,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="shop.html">
+  <header id="site-header"></header>
+
+  <main>
+    <div class="wrap page-head">
+      <span class="eyebrow">The shop</span>
+      <h1>Find something they'll adore</h1>
+    </div>
+
+    <div class="wrap">
+      <div class="shop-wrap">
+        <!-- FILTERS -->
+        <aside class="filters">
+          <h3>Filters</h3>
+          <div class="filter-group">
+            <span class="label">Category</span>
+            <div class="chip-row" id="cat-chips"></div>
+          </div>
+          <div class="filter-group">
+            <span class="label">Age</span>
+            <div class="chip-row" id="age-chips"></div>
+          </div>
+          <div class="filter-group">
+            <span class="label">Max price · <span class="range-val" id="price-val">$40.00</span></span>
+            <input type="range" id="price-range" min="10" max="40" value="40" step="1">
+          </div>
+          <button class="btn btn--ghost btn--block btn--sm" id="reset-filters">Reset all</button>
+        </aside>
+
+        <!-- RESULTS -->
+        <div>
+          <div class="shop-topbar">
+            <div class="search-box">
+              <span>🔍</span>
+              <input type="search" id="search" placeholder="Search treats…" aria-label="Search products">
+            </div>
+            <select class="select" id="sort" aria-label="Sort products">
+              <option value="featured">Featured</option>
+              <option value="low">Price: low to high</option>
+              <option value="high">Price: high to low</option>
+              <option value="rating">Top rated</option>
+            </select>
+            <span class="result-count" id="result-count"></span>
+          </div>
+          <div class="product-grid" id="shop-grid"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="data.js"></script>
+  <script src="auth.js"></script>
+  <script src="app.js"></script>
+  <script src="pages.js"></script>
+</body>
+</html>
