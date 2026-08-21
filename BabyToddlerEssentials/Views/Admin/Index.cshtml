@@ -1,13 +1,61 @@
 ﻿@{
-    ViewData["Title"] = "Admin Dashboard";
+    ViewData["Title"] = "Dashboard";
+    Layout = "_AdminLayout";
 }
 
-<div class="container mt-5">
+<div class="page-head">
+    <div>
+        <h1>Dashboard</h1>
+        <p>Overview of your store performance</p>
+    </div>
+    <a asp-controller="Products" asp-action="Create" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Product
+    </a>
+</div>
 
-    <h1>Admin Dashboard</h1>
+<div class="stat-grid">
+    <div class="stat-card">
+        <div class="stat-card__icon"><i class="fa-solid fa-users"></i></div>
+        <div>
+            <div class="stat-card__label">Total Users</div>
+            <div class="stat-card__value">@ViewBag.TotalUsers</div>
+        </div>
+    </div>
 
-    <p>
-        Welcome to the Admin area.
-    </p>
+    <div class="stat-card">
+        <div class="stat-card__icon"><i class="fa-solid fa-shirt"></i></div>
+        <div>
+            <div class="stat-card__label">Total Products</div>
+            <div class="stat-card__value">@ViewBag.TotalProducts</div>
+        </div>
+    </div>
 
+    <div class="stat-card">
+        <div class="stat-card__icon"><i class="fa-solid fa-layer-group"></i></div>
+        <div>
+            <div class="stat-card__label">Categories</div>
+            <div class="stat-card__value">@ViewBag.TotalCategories</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-card__icon"><i class="fa-solid fa-bag-shopping"></i></div>
+        <div>
+            <div class="stat-card__label">Total Orders</div>
+            <div class="stat-card__value">@ViewBag.TotalOrders</div>
+        </div>
+    </div>
+</div>
+
+<div class="panel" style="margin-top:18px;">
+    <div class="panel__head">
+        <h2 class="section-title">Quick Actions</h2>
+    </div>
+    <div class="quick-actions">
+        <a asp-controller="Products" asp-action="Create" class="quick-action"><i class="fa-solid fa-plus"></i><span>Add Product</span></a>
+        <a asp-controller="Categories" asp-action="Create" class="quick-action"><i class="fa-solid fa-layer-group"></i><span>Add Category</span></a>
+        <a asp-controller="Admin" asp-action="Orders" class="quick-action"><i class="fa-solid fa-bag-shopping"></i><span>View Orders</span></a>
+        <a asp-controller="Admin" asp-action="Reviews" class="quick-action"><i class="fa-solid fa-star"></i><span>Review Comments</span></a>
+        <a asp-controller="Admin" asp-action="Testimonials" class="quick-action"><i class="fa-solid fa-quote-right"></i><span>Testimonials</span></a>
+    </div>
 </div>
