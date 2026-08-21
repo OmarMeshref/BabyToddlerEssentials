@@ -1,0 +1,95 @@
+﻿@model IEnumerable<BabyToddlerEssentials.Models.ApplicationUser>
+@{
+    ViewData["Title"] = "Users";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-head">
+    <div>
+        <h1>Users</h1>
+        <p>View everyone registered on your storefront</p>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="toolbar">
+        <div class="search-input">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="userSearchInput" placeholder="Search by name or email..." onkeyup="filterUsers()">
+        </div>
+        <select class="select-control" id="userRoleFilter" onchange="filterUsers()">
+            <option value="">All Roles</option>
+            <option value="Admin">Admin</option>
+            <option value="Customer">Customer</option>
+        </select>
+    </div>
+
+    <div class="table-scroll">
+        <table class="data-table" id="usersTable">
+            <thead>
+                <tr>
+                    <th>User / ID</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var user in Model)
+                    {
+                        <tr class="user-row">
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span class="avatar">@(user.Email?.Substring(0, Math.Min(2, user.Email.Length)).ToUpper() ?? "U")</span>
+                                    <div>
+                                        <div style="font-weight: 600;">@(user.UserName ?? "User")</div>
+                                        <small style="color: var(--muted); font-size: 11px;">@user.Id</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="user-email">@user.Email</td>
+                            <td>@(string.IsNullOrEmpty(user.PhoneNumber) ? "—" : user.PhoneNumber)</td>
+                            <td>
+                                <span class="badge" style="background: rgba(25, 135, 84, 0.1); color: #198754; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">
+                                    Active
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 30px;">
+                            <div class="empty-state">
+                                <div class="empty-state__icon"><i class="fa-solid fa-users"></i></div>
+                                <h3>No users found</h3>
+                                <p>No registered accounts in the database yet.</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterUsers() {
+            var search = document.getElementById('userSearchInput').value.toLowerCase();
+            var rows = document.querySelectorAll('#usersTable tbody tr.user-row');
+
+            rows.forEach(function(row) {
+                var text = row.innerText.toLowerCase();
+                if (text.includes(search)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+}

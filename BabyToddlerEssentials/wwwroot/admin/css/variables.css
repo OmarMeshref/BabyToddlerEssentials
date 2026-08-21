@@ -1,0 +1,78 @@
+/* ==========================================================================
+   baby basket Admin — Design Tokens
+   
+   ========================================================================== */
+
+:root {
+  /* Brand */
+  --bubblegum: #FF5CA8;
+  --bubblegum-dark: #E8438F;
+  --bubblegum-light: #FFE1EF;
+  --sky: #4CC3FF;
+  --sky-dark: #2AA6E6;
+  --sky-light: #E1F6FF;
+  --sunny: #FFC93C;
+  --sunny-dark: #E8AE1F;
+  --sunny-light: #FFF3D6;
+  --mint: #5FE0B0;
+  --mint-dark: #34C093;
+  --mint-light: #DFFBF0;
+
+  /* Aliases used across components (kept so existing markup keeps working) */
+  --primary: var(--bubblegum);
+  --primary-dark: var(--bubblegum-dark);
+  --primary-light: var(--bubblegum-light);
+  --secondary: #FFF7FB;
+  --accent: var(--sunny);
+  --accent-light: var(--sunny-light);
+  --blue: var(--sky);
+  --blue-light: var(--sky-light);
+
+  /* Text */
+  --text: #3B2A4A;      /* plum ink */
+  --muted: #8A7A97;
+  --muted-light: #C3B6CC;
+  --white: #FFFFFF;
+
+  /* Status (candy-coded, still accessible) */
+  --success: var(--mint-dark);
+  --success-bg: var(--mint-light);
+  --danger: #FF6B6B;
+  --danger-bg: #FFE7E7;
+  --warning: var(--sunny-dark);
+  --warning-bg: var(--sunny-light);
+  --info: var(--sky-dark);
+  --info-bg: var(--sky-light);
+
+  /* Neutrals */
+  --bg: #FFF7FB;               /* soft cream-pink */
+  --surface: #FFFFFF;
+  --border: #FBDCEC;
+  --border-strong: #F6C4DF;
+
+  /* Elevation — chunky, candy-colored, low blur ("gumdrop" shadows) */
+  --shadow-sm: 0 2px 0 rgba(59, 42, 74, 0.06);
+  --shadow-md: 0 6px 0 rgba(255, 92, 168, 0.10), 0 10px 24px rgba(59, 42, 74, 0.08);
+  --shadow-lg: 0 10px 0 rgba(255, 92, 168, 0.12), 0 20px 40px rgba(59, 42, 74, 0.16);
+
+  /* Radius — soft and rounded everywhere */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 26px;
+  --radius-full: 999px;
+
+  /* Type */
+  --font-display: 'Baloo 2', 'Nunito', sans-serif;
+  --font-body: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Layout */
+  --sidebar-w: 264px;
+  --sidebar-w-collapsed: 84px;
+  --header-h: 72px;
+  --scallop-size: 16px;
+
+  /* Motion */
+  --transition-fast: 140ms ease;
+  --transition-base: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 380ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
