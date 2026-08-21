@@ -1,5 +1,6 @@
 using BabyToddlerEssentials.Data;
 using BabyToddlerEssentials.Models;
+using BabyToddlerEssentials.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,23 @@ builder.Services.AddSingleton<IEmailSender, NoOpEmailSender>();
 
 builder.Services.AddControllersWithViews();
 
+// =========================================
+// Application Services
+// =========================================
+// ImageService: saves product image uploads to wwwroot/images/products and
+// returns the path we store in ProductImage.ImagePath (validates image type + size).
+
+builder.Services.AddScoped<IImageService, BabyToddlerEssentials.Services.ImageService>();
+
+
+// =========================================
+// Cart Service
+// =========================================
+// CartService: manages the shopping cart, which lives in the user's SESSION
+// Stores only ProductId + Quantity; prices/stock are
+// always read live from the database. Enforces "one line per product"
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICartService, BabyToddlerEssentials.Services.CartService>();
 
 // =========================================
 // Session

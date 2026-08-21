@@ -20,7 +20,7 @@ namespace BabyToddlerEssentials.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
 
-            if (user == null) 
+            if (user == null)
             {
                 return NotFound();
             }
