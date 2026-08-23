@@ -1,0 +1,277 @@
+﻿@model BabyToddlerEssentials.ViewModels.ProductDetailsVM
+
+@{
+    ViewData["Title"] = Model.Product.Name;
+    ViewData["Page"] = "product";
+    var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+}
+
+<section class="section">
+    <div class="wrap">
+
+        <a asp-controller="Product" asp-action="Index" class="link-back">← Back to shop</a>
+
+        <!-- ============ PRODUCT ============ -->
+        <div class="pdp">
+
+            <!-- ---- Gallery ---- -->
+            <div class="gallery">
+                <div class="gallery-main" id="galleryMain">
+                    @if (Model.Images.Any())
+                    {
+                        var main = Model.PrimaryImagePath ?? Model.Images.First().ImagePath;
+                        <img id="galleryMainImg" src="@main" alt="@Model.Product.Name" class="template-product-image" />
+                    }
+                    else
+                    {
+                        <span class="emoji" style="font-size:6rem;">🧸</span>
+                    }
+                </div>
+
+                @if (Model.Images.Count > 1)
+                {
+                    <div class="gallery-thumbs">
+                        @foreach (var img in Model.Images)
+                        {
+                            <button type="button"
+                                    class="thumb @(img.ImagePath == (Model.PrimaryImagePath ?? Model.Images.First().ImagePath) ? "on" : "")"
+                                    data-img="@img.ImagePath">
+                                <img src="@img.ImagePath" alt="@Model.Product.Name" class="template-product-image" />
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- ---- Info ---- -->
+            <div class="pdp-info">
+
+                <span class="pdp-cat">@Model.Product.Category?.Name</span>
+                <h1>@Model.Product.Name</h1>
+
+                <div class="pdp-price">
+                    @if (Model.Product.DiscountPrice.HasValue)
+                    {
+                        <span>@Model.Product.DiscountPrice.Value.ToString("C")</span>
+                        <span class="was">@Model.Product.Price.ToString("C")</span>
+                    }
+                    else
+                    {
+                        <span>@Model.Product.Price.ToString("C")</span>
+                    }
+                </div>
+
+                <!-- rating summary -->
+                <div class="card-rating">
+                    @if (Model.ReviewCount > 0)
+                    {
+                        <span class="stars">★</span> 
+                        @Model.AverageRating.ToString("0.0")
+                        <span class="review-date">(@Model.ReviewCount review@(Model.ReviewCount == 1 ? "" : "s"))</span>
+                    }
+                    else
+                    {
+                        <span class="review-date">No reviews yet</span>
+                    }
+                </div>
+
+                <div class="pdp-meta">
+                    @if (!string.IsNullOrWhiteSpace(Model.Product.Brand))
+                    {
+                        <span class="pill">Brand: @Model.Product.Brand</span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.Product.AgeRange))
+                    {
+                        <span class="pill">Age: @Model.Product.AgeRange</span>
+                    }
+                    @if (Model.InStock)
+                    {
+                        <span class="pill">In stock: @Model.Product.StockQuantity</span>
+                    }
+                    else
+                    {
+                        <span class="pill">Out of stock</span>
+                    }
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Product.Description))
+                {
+                    <p class="pdp-desc">@Model.Product.Description</p>
+                }
+
+                <!-- actions -->
+                <div class="pdp-actions">
+                    <form asp-controller="User" asp-action="AddToCart" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="productId" value="@Model.Product.Id" />
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                        <button class="btn" type="submit" @(Model.InStock ? "" : "disabled")>
+                            🛒 Add to cart
+                        </button>
+                    </form>
+
+                    <form asp-controller="User" asp-action="AddToWishlist" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="productId" value="@Model.Product.Id" />
+                        <input type="hidden" name="returnUrl" value="@returnUrl" />
+                        <button class="btn btn--ghost" type="submit">💖 Add to wishlist</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ============ REVIEWS ============ -->
+        <div class="section" style="padding-left:0;padding-right:0;">
+            <div class="section-head">
+                <span class="eyebrow">⭐ Reviews</span>
+                <h2>What families say</h2>
+            </div>
+
+            <div class="reviews-grid">
+
+                <!-- summary -->
+                <aside class="review-summary">
+                    <div class="rs-avg">@Model.AverageRating.ToString("0.0")</div>
+                    <div class="rs-stars">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span>@(i <= Math.Round(Model.AverageRating) ? "★" : "☆")</span>
+                        }
+                    </div>
+                    <div class="rs-count">@Model.ReviewCount review@(Model.ReviewCount == 1 ? "" : "s")</div>
+                </aside>
+
+                <!-- list + form -->
+                <div class="review-list">
+
+                    @* --- write a review --- *@
+                    @if (Model.CanReview)
+                    {
+                        <form asp-controller="Product" asp-action="AddReview" method="post" class="review-form form-card">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="ProductId" value="@Model.Product.Id" />
+
+                            <h3>Write a review</h3>
+
+                            <div class="field">
+                                <label>Your rating</label>
+                                <div class="star-pick" id="starPick">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <span data-value="@i">☆</span>
+                                    }
+                                </div>
+                                <input type="hidden" name="Rating" id="ratingInput" value="0" />
+                                <span class="err" id="ratingErr" style="display:none;">Please choose a rating.</span>
+                            </div>
+
+                            <div class="field">
+                                <label>Your review</label>
+                                <textarea name="Comment" rows="3" maxlength="1000" placeholder="Share your experience..."></textarea>
+                            </div>
+
+                            <button class="btn" type="submit" id="reviewSubmit">Submit review</button>
+                        </form>
+                    }
+                    else if (Model.AlreadyReviewed)
+                    {
+                        <div class="form-card"><p>✅ You’ve already reviewed this product.</p></div>
+                    }
+                    else
+                    {
+                        <div class="form-card">
+                            <p>Please <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@returnUrl">log in</a> to leave a review.</p>
+                        </div>
+                    }
+
+                    @* --- existing approved reviews --- *@
+                    @if (Model.ApprovedReviews.Any())
+                    {
+                        foreach (var r in Model.ApprovedReviews)
+                        {
+                            <div class="review">
+                                <div class="review-top">
+                                    <span class="review-avatar">👤</span>
+                                    <div>
+                                        <strong>@(r.User?.FullName ?? "Customer")</strong>
+                                        <div class="review-stars">
+                                            @for (int i = 1; i <= 5; i++)
+                                            {
+                                                <span>@(i <= r.Rating ? "★" : "☆")</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <span class="review-date">@r.CreatedAt.ToString("MMM d, yyyy")</span>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(r.Comment))
+                                {
+                                    <p class="review-text">@r.Comment</p>
+                                }
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty" style="padding:24px;">
+                            <p>No reviews yet — be the first to share your experience!</p>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ToastTrigger" />
+    <script>
+        // ---- Gallery: click a thumbnail to swap the main image ----
+        (function() {
+            const main = document.getElementById("galleryMainImg");
+            document.querySelectorAll(".gallery-thumbs .thumb").forEach(function(thumb) {
+                thumb.addEventListener("click", function() {
+                    if (!main) return;
+                    main.src = thumb.getAttribute("data-img");
+                    document.querySelectorAll(".gallery-thumbs .thumb").forEach(t => t.classList.remove("on"));
+                    thumb.classList.add("on");
+                });
+            });
+        })();
+
+        // ---- Clickable star rating in the review form ----
+        (function() {
+            const pick = document.getElementById("starPick");
+            if (!pick) return;
+            const stars = pick.querySelectorAll("span");
+            const input = document.getElementById("ratingInput");
+            const err = document.getElementById("ratingErr");
+
+            function paint(value) {
+                stars.forEach(function(s) {
+                    s.textContent = (parseInt(s.dataset.value) <= value) ? "★" : "☆";
+                });
+            }
+
+            stars.forEach(function(s) {
+                s.addEventListener("click", function() {
+                    const val = parseInt(s.dataset.value);
+                    input.value = val;
+                    paint(val);
+                    if (err) err.style.display = "none";
+                });
+            });
+
+            // block submit if no rating chosen
+            const form = pick.closest("form");
+            form.addEventListener("submit", function(e) {
+                if (parseInt(input.value) < 1) {
+                    e.preventDefault();
+                    if (err) err.style.display = "block";
+                }
+            });
+        })();
+    </script>
+}

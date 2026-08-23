@@ -1,0 +1,184 @@
+﻿@model BabyToddlerEssentials.ViewModels.CheckoutVM
+
+@{
+    ViewData["Title"] = "Checkout";
+    ViewData["Page"] = "checkout";
+}
+
+<style>
+    /* Payment method tiles */
+    .pay-toggle {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin-top: 8px;
+    }
+
+    .pay-opt {
+        cursor: pointer;
+        border: 2px solid var(--line, #eee);
+        border-radius: 16px;
+        padding: 16px 12px;
+        text-align: center;
+        transition: all .15s;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+    }
+
+        .pay-opt .pay-emoji {
+            font-size: 1.6rem;
+        }
+
+        .pay-opt.on {
+            border-color: var(--pink, #ff5ea8);
+            box-shadow: 0 4px 14px rgba(255,94,168,.25);
+        }
+
+        .pay-opt input {
+            display: none;
+        }
+
+    @@media (max-width: 560px) {
+        .pay-toggle {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<section class="section">
+    <div class="wrap">
+
+        <div class="page-head">
+            <span class="eyebrow">💳 Checkout</span>
+            <h1>Complete your order</h1>
+        </div>
+
+        <form asp-controller="User" asp-action="PlaceOrder" method="post">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="auth-msg bad"></div>
+
+            <div class="cart-layout">
+
+                <!-- ===== Delivery + payment ===== -->
+                <div>
+                    <div class="form-card">
+                        <h3>Delivery details</h3>
+
+                        <div class="field">
+                            <label asp-for="CustomerName"></label>
+                            <input asp-for="CustomerName" placeholder="Full name" />
+                            <span asp-validation-for="CustomerName" class="err"></span>
+                        </div>
+
+                        <div class="field">
+                            <label asp-for="PhoneNumber"></label>
+                            <input asp-for="PhoneNumber" placeholder="Phone number" />
+                            <span asp-validation-for="PhoneNumber" class="err"></span>
+                        </div>
+
+                        <div class="field">
+                            <label asp-for="ShippingAddress"></label>
+                            <input asp-for="ShippingAddress" placeholder="Street address" />
+                            <span asp-validation-for="ShippingAddress" class="err"></span>
+                        </div>
+
+                        <div class="field">
+                            <label asp-for="City"></label>
+                            <input asp-for="City" placeholder="City" />
+                            <span asp-validation-for="City" class="err"></span>
+                        </div>
+
+                        <div class="field">
+                            <label asp-for="Notes"></label>
+                            <textarea asp-for="Notes" rows="2" placeholder="Delivery notes (optional)"></textarea>
+                            <span asp-validation-for="Notes" class="err"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-card">
+                        <h3>Payment method</h3>
+
+                        <div class="pay-toggle" id="payToggle">
+                            <label class="pay-opt">
+                                <input type="radio" asp-for="PaymentMethod" value="Credit/Debit Card" />
+                                <span class="pay-emoji">💳</span>
+                                <span>Card</span>
+                            </label>
+                            <label class="pay-opt">
+                                <input type="radio" asp-for="PaymentMethod" value="PayPal" />
+                                <span class="pay-emoji">🅿️</span>
+                                <span>PayPal</span>
+                            </label>
+                            <label class="pay-opt">
+                                <input type="radio" asp-for="PaymentMethod" value="Cash on Delivery" />
+                                <span class="pay-emoji">💵</span>
+                                <span>Cash on Delivery</span>
+                            </label>
+                        </div>
+                        <span asp-validation-for="PaymentMethod" class="err"></span>
+                    </div>
+                </div>
+
+                <!-- ===== Order summary ===== -->
+                <aside class="summary">
+                    <h3>Order summary</h3>
+
+                    @foreach (var item in Model.Cart.Items)
+                    {
+                        <div class="sum-row">
+                            <span>@item.Name × @item.Quantity</span>
+                            <span>@item.Subtotal.ToString("C")</span>
+                        </div>
+                    }
+
+                    <div class="sum-row">
+                        <span>Shipping</span>
+                        <span>Free</span>
+                    </div>
+                    <div class="sum-row total">
+                        <span>Total</span>
+                        <span>@Model.Cart.Total.ToString("C")</span>
+                    </div>
+
+                    <button type="submit" class="btn btn--block" style="margin-top:16px;">
+                        Place order →
+                    </button>
+                    <a asp-controller="User" asp-action="Cart" class="btn btn--ghost btn--block btn--sm" style="margin-top:10px;">
+                        Back to cart
+                    </a>
+                </aside>
+
+            </div>
+        </form>
+
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ToastTrigger" />
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Highlight the selected payment tile
+        (function() {
+            const toggle = document.getElementById("payToggle");
+            if (!toggle) return;
+            const opts = toggle.querySelectorAll(".pay-opt");
+
+            function paint() {
+                opts.forEach(function(opt) {
+                    const radio = opt.querySelector("input[type=radio]");
+                    opt.classList.toggle("on", radio.checked);
+                });
+            }
+            opts.forEach(function(opt) {
+                opt.querySelector("input[type=radio]").addEventListener("change", paint);
+            });
+            paint(); // reflect any pre-selected value
+        })();
+    </script>
+}

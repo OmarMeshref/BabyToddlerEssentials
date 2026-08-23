@@ -1,0 +1,80 @@
+﻿@model List<BabyToddlerEssentials.Models.Testimonial>
+
+@{
+    ViewData["Title"] = "Reviews";
+    ViewData["Page"] = "reviews";
+
+    bool isLoggedIn = User.Identity?.IsAuthenticated == true;
+    bool alreadySubmitted = ViewBag.AlreadySubmitted ?? false;
+    var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+}
+
+<section class="section">
+    <div class="wrap">
+
+        <div class="page-head" style="text-align:center;">
+            <span class="eyebrow">💬 Testimonials</span>
+            <h1>What families say</h1>
+            <p class="section-sub">Real experiences from parents who shop with Jellybean.</p>
+        </div>
+
+        <!-- ===== Submit entry point ===== -->
+        <div style="text-align:center;margin-bottom:32px;">
+            @if (!isLoggedIn)
+            {
+                <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@returnUrl" class="btn btn--ghost">
+                    Log in to share your experience
+                </a>
+            }
+            else if (alreadySubmitted)
+            {
+                <p class="meta">✅ Thanks — you’ve already submitted a testimonial.</p>
+            }
+            else
+            {
+                <a asp-controller="User" asp-action="SubmitTestimonial" class="btn">✍️ Share your experience</a>
+            }
+        </div>
+
+        <!-- ===== Testimonials ===== -->
+        @if (!Model.Any())
+        {
+            <div class="empty">
+                <div class="big">💬</div>
+                <h3>No testimonials yet</h3>
+                <p>Be the first to share your experience with Jellybean!</p>
+            </div>
+        }
+        else
+        {
+            <div class="testi-grid">
+                @foreach (var t in Model)
+                {
+                    <article class="testi-card reveal">
+                        <div class="stars">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span>@(i <= t.Rating ? "★" : "☆")</span>
+                            }
+                        </div>
+
+                        <p class="testi-text">“@t.Message”</p>
+
+                        <div class="testi-author">
+                            <span class="testi-avatar">👤</span>
+                            <div>
+                                <strong>@(t.User?.FullName ?? "Customer")</strong>
+                                <div class="meta">@t.CreatedAt.ToString("MMM d, yyyy")</div>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ToastTrigger" />
+}

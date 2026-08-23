@@ -1,0 +1,99 @@
+﻿@model List<BabyToddlerEssentials.Models.WishlistItem>
+
+@{
+    ViewData["Title"] = "Your Wishlist";
+    ViewData["Page"] = "wishlist";
+    var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
+}
+
+<section class="section">
+    <div class="wrap">
+
+        <div class="page-head">
+            <span class="eyebrow">💖 Wishlist</span>
+            <h1>Your favorites</h1>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="empty">
+                <div class="big">💖</div>
+                <h3>Your wishlist is empty</h3>
+                <p>Save products you love and find them here anytime.</p>
+                <a asp-controller="Product" asp-action="Index" class="btn">Browse products</a>
+            </div>
+        }
+        else
+        {
+            <div class="product-grid">
+                @foreach (var item in Model)
+                {
+                    var p = item.Product;
+                    var img = p.ProductImages.FirstOrDefault(i => i.IsPrimary)?.ImagePath
+                              ?? p.ProductImages.FirstOrDefault()?.ImagePath;
+                    var inStock = p.StockQuantity > 0;
+
+                    <article class="card reveal">
+
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="card-media bg-a">
+                            @if (!string.IsNullOrEmpty(img))
+                            {
+                                <img src="@img" alt="@p.Name" class="template-product-image" />
+                            }
+                            else
+                            {
+                                <span class="emoji">🧸</span>
+                            }
+                            @if (!inStock)
+                            {
+                                <span class="age-badge">Out of stock</span>
+                            }
+                        </a>
+
+                        <div class="card-body">
+                            <span class="card-cat">@p.Category?.Name</span>
+
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id">
+                                <h3 class="card-title">@p.Name</h3>
+                            </a>
+
+                            <div class="price">
+                                @if (p.DiscountPrice.HasValue)
+                                {
+                                    <span>@p.DiscountPrice.Value.ToString("C")</span>
+                                    <span class="was">@p.Price.ToString("C")</span>
+                                }
+                                else
+                                {
+                                    <span>@p.Price.ToString("C")</span>
+                                }
+                            </div>
+
+                            <!-- actions -->
+                            <div class="pdp-actions" style="margin-top:10px;">
+                                <form asp-controller="User" asp-action="AddToCart" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productId" value="@p.Id" />
+                                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                                    <button class="btn btn--sm" type="submit" @(inStock ? "" : "disabled")>🛒 Add to cart</button>
+                                </form>
+
+                                <form asp-controller="User" asp-action="RemoveFromWishlist" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="productId" value="@p.Id" />
+                                    <button class="btn btn--ghost btn--sm" type="submit">Remove</button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </article>
+                }
+            </div>
+        }
+
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ToastTrigger" />
+}
