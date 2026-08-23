@@ -190,9 +190,15 @@
 
                             <!-- Enable when Orders feature exists -->
 
-                            <span class="account-future">
-                                📦 Order history
-                            </span>
+                            @if (User.IsInRole("User"))
+                            {
+                                <a asp-controller="User"
+                                   asp-action="Orders">
+
+                                    📦 Order history
+
+                                </a>
+                            }
 
 
                             <form asp-area="Identity"
@@ -507,7 +513,7 @@
 
 
     <!-- Safe global template behavior only -->
-    <script src="~/template/js/template-ui.js"
+    <script src="~/template/JS/template-ui.js"
             asp-append-version="true"></script>
 
 
