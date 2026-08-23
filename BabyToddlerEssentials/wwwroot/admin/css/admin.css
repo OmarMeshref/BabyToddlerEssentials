@@ -495,7 +495,103 @@ h1, h2, h3, .section-title, .sidebar__brand-name, .stat-card__value,
   margin: 0;
   color: var(--text);
 }
+.page-head::before,
+.page-head::after,
+.topbar::after,
+.dashboard-blob,
+.decorative-circle {
+    display: none !important;
+}
+.actions-cell {
+    text-align: right;
+    white-space: nowrap;
+}
 
+.table-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+    .table-actions .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border-radius: 50%;
+    }
+.image-upload-card {
+    border: 2px dashed var(--pink-200, #f48fb1);
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    background: var(--pink-50, #fff5f8);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.image-upload-icon {
+    font-size: 32px;
+    color: var(--primary, #ec407a);
+    margin-bottom: 8px;
+}
+
+.image-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.image-preview-card {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    border: 1px solid var(--border, #eee);
+}
+
+    .image-preview-card img {
+        width: 100%;
+        height: 100px;
+        object-fit: cover;
+        display: block;
+    }
+
+.image-badge-primary {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    background: var(--primary, #ec407a);
+    color: #fff;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.image-delete-btn {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(220, 53, 69, 0.9);
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 11px;
+}
+.hidden-file-input {
+    display: none !important;
+}
 @media (prefers-reduced-motion: reduce) {
   .page-head::before { animation: none; }
 }

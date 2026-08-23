@@ -1,0 +1,210 @@
+﻿@model BabyToddlerEssentials.ViewModels.ProductFormVM
+@{
+    ViewData["Title"] = "Edit Product";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-head">
+    <div>
+        <h1 id="formTitle">Edit Product</h1>
+        <p id="formSubtitle">Update product information and catalog details</p>
+    </div>
+    <a asp-controller="Product" asp-action="Manage" class="btn btn-secondary">Cancel</a>
+</div>
+
+<form asp-controller="Product" asp-action="Edit" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-card">
+        <h3 class="form-card__title">Basic Information</h3>
+        <p class="form-card__sub">Name, category and description shown to customers.</p>
+
+        <div class="form-grid">
+            <div class="form-field form-field--full">
+                <label asp-for="Name">Product Name <span class="required-mark">*</span></label>
+                <input asp-for="Name" class="text-input" placeholder="e.g. Organic Cotton Baby Bodysuit">
+                <span asp-validation-for="Name" class="field-error"></span>
+            </div>
+            <div class="form-field">
+                <label asp-for="CategoryId">Category <span class="required-mark">*</span></label>
+                <select asp-for="CategoryId" class="select-control" asp-items="@(new SelectList(Model?.Categories ?? new List<BabyToddlerEssentials.Models.Category>(), "Id", "Name"))">
+                    <option value="">Select Category</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="field-error"></span>
+            </div>
+            <div class="form-field">
+                <label asp-for="IsActive">Status</label>
+                <select asp-for="IsActive" class="select-control">
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                </select>
+            </div>
+            <div class="form-field form-field--full">
+                <label asp-for="Description">Description</label>
+                <textarea asp-for="Description" class="text-input" placeholder="Describe the product's material, sizing and care instructions..."></textarea>
+                <span asp-validation-for="Description" class="field-error"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h3 class="form-card__title">Pricing</h3>
+        <p class="form-card__sub">Set current and discounted prices.</p>
+        <div class="form-grid">
+            <div class="form-field">
+                <label asp-for="Price">Price (USD) <span class="required-mark">*</span></label>
+                <input asp-for="Price" type="number" step="0.01" class="text-input" placeholder="0.00">
+                <span asp-validation-for="Price" class="field-error"></span>
+            </div>
+            <div class="form-field">
+                <label asp-for="DiscountPrice">Discount Price <span class="hint">(optional)</span></label>
+                <input asp-for="DiscountPrice" type="number" step="0.01" class="text-input" placeholder="0.00">
+                <span asp-validation-for="DiscountPrice" class="field-error"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h3 class="form-card__title">Inventory & Details</h3>
+        <p class="form-card__sub">Stock and brand specification.</p>
+        <div class="form-grid">
+            <div class="form-field">
+                <label asp-for="StockQuantity">Stock Quantity <span class="required-mark">*</span></label>
+                <input asp-for="StockQuantity" type="number" class="text-input" placeholder="0">
+                <span asp-validation-for="StockQuantity" class="field-error"></span>
+            </div>
+            <div class="form-field">
+                <label asp-for="Brand">Brand</label>
+                <input asp-for="Brand" class="text-input" placeholder="e.g. Carter's">
+                <span asp-validation-for="Brand" class="field-error"></span>
+            </div>
+            <div class="form-field">
+                <label asp-for="AgeRange">Age Range</label>
+                <input asp-for="AgeRange" class="text-input" placeholder="e.g. 0-6 Months">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h3 class="form-card__title">Existing Images</h3>
+        <p class="form-card__sub">Currently uploaded photos for this product.</p>
+
+        <div class="image-grid-container">
+            @if (Model?.ExistingImages != null && Model.ExistingImages.Any())
+            {
+                @foreach (var img in Model.ExistingImages)
+                {
+                    <div class="image-preview-card">
+                        <img src="@img.ImagePath" alt="Product Image">
+                        @if (img.IsPrimary)
+                        {
+                            <span class="image-badge-primary">Primary</span>
+                        }
+                        <button type="submit"
+                                asp-controller="Product"
+                                asp-action="DeleteImage"
+                                asp-route-imageId="@img.Id"
+                                class="image-delete-btn"
+                                title="Remove Image"
+                                onclick="return confirm('Remove this image?');">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="cell-muted">No images currently saved for this product.</p>
+            }
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h3 class="form-card__title">Upload New Images</h3>
+        <p class="form-card__sub">Add more photos to this product gallery.</p>
+
+        <div class="image-upload-card" onclick="document.getElementById('editFilePicker').click()">
+            <i class="fa-solid fa-cloud-arrow-up image-upload-icon"></i>
+            <p><strong>Click to add new photos</strong></p>
+            <span class="cell-muted">Allowed: JPG, PNG, WEBP (Max 5MB each)</span>
+        </div>
+
+        <!-- Hidden inputs using explicit style to guarantee zero appearance -->
+        <input asp-for="NewImages" id="editFinalImagesInput" type="file" multiple class="hidden-file-input">
+        <input id="editFilePicker" type="file" accept=".jpg,.jpeg,.png,.webp" multiple class="hidden-file-input" onchange="appendEditFiles(event)">
+
+        <span asp-validation-for="NewImages" class="field-error"></span>
+        <div id="newImagesPreviewGrid" class="image-grid-container"></div>
+    </div>
+
+    <div class="form-actions">
+        <a asp-controller="Product" asp-action="Manage" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" id="saveProductBtn">
+            <i class="fa-solid fa-check"></i> Update Product
+        </button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        const editDt = new DataTransfer();
+        // Check if this product already has a primary image saved in database
+        const hasExistingPrimary = @(Model?.ExistingImages != null && Model.ExistingImages.Any(i => i.IsPrimary) ? "true" : "false");
+
+        function appendEditFiles(event) {
+            const newFiles = event.target.files;
+            if (!newFiles || newFiles.length === 0) return;
+
+            for (let i = 0; i < newFiles.length; i++) {
+                editDt.items.add(newFiles[i]);
+            }
+
+            syncEditRender();
+            event.target.value = '';
+        }
+
+        function removeNewFile(index) {
+            editDt.items.remove(index);
+            syncEditRender();
+        }
+
+        function syncEditRender() {
+            const finalInput = document.getElementById('editFinalImagesInput');
+            finalInput.files = editDt.files;
+
+            const container = document.getElementById('newImagesPreviewGrid');
+            container.innerHTML = '';
+
+            Array.from(editDt.files).forEach((file, index) => {
+                const card = document.createElement('div');
+                card.className = 'image-preview-card';
+
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.type = 'button';
+                deleteBtn.className = 'image-delete-btn';
+                deleteBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    removeNewFile(index);
+                };
+
+                // Show Primary badge only on the first newly added image IF product currently has no primary
+                if (!hasExistingPrimary && index === 0) {
+                    const tag = document.createElement('span');
+                    tag.className = 'image-badge-primary';
+                    tag.textContent = 'Primary';
+                    card.appendChild(tag);
+                }
+
+                card.appendChild(img);
+                card.appendChild(deleteBtn);
+                container.appendChild(card);
+            });
+        }
+    </script>
+}
+

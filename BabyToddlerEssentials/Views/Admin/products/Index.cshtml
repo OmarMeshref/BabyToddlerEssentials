@@ -1,0 +1,156 @@
+﻿@model IEnumerable<BabyToddlerEssentials.Models.Product>
+@{
+    ViewData["Title"] = "Products";
+    Layout = "_AdminLayout";
+    var categories = ViewBag.Categories as List<BabyToddlerEssentials.Models.Category> ?? new List<BabyToddlerEssentials.Models.Category>();
+    int? selectedCategory = ViewBag.CategoryId as int?;
+    string currentSort = ViewBag.Sort as string ?? "";
+}
+
+<div class="page-head">
+    <div>
+        <h1>Products</h1>
+        <p>Manage your product catalog</p>
+    </div>
+    <a asp-controller="Product" asp-action="Create" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Product
+    </a>
+</div>
+
+<div class="panel">
+    <form method="get" asp-controller="Product" asp-action="Manage" id="productFilterForm" class="toolbar">
+        <div class="search-input">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text"
+                   id="liveSearchInput"
+                   name="search"
+                   value="@ViewBag.Search"
+                   placeholder="Search products by name or category..."
+                   autocomplete="off" />
+        </div>
+
+        <select name="categoryId" class="select-control" onchange="document.getElementById('productFilterForm').submit()">
+            <option value="">All Categories</option>
+            @foreach (var cat in categories)
+            {
+                <option value="@cat.Id" selected="@(selectedCategory == cat.Id)">@cat.Name</option>
+            }
+        </select>
+
+        <select name="sort" class="select-control" onchange="document.getElementById('productFilterForm').submit()">
+            <option value="" selected="@(string.IsNullOrEmpty(currentSort))">Newest First</option>
+            <option value="price_asc" selected="@(currentSort == "price_asc")">Price: Low to High</option>
+            <option value="price_desc" selected="@(currentSort == "price_desc")">Price: High to Low</option>
+            <option value="stock_desc" selected="@(currentSort == "stock_desc")">Stock: High to Low</option>
+            <option value="stock_asc" selected="@(currentSort == "stock_asc")">Stock: Low to High</option>
+            <option value="name" selected="@(currentSort == "name")">Alphabetical (A-Z)</option>
+        </select>
+    </form>
+
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th class="actions-cell">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        var primaryImg = item.ProductImages?.FirstOrDefault(i => i.IsPrimary)?.ImagePath
+                                         ?? item.ProductImages?.FirstOrDefault()?.ImagePath
+                                         ?? "/images/default-product.png";
+
+                        <tr>
+                            <td>
+                                <div class="cell-product">
+                                    <img src="@primaryImg" alt="@item.Name" class="cell-thumb">
+                                    <span class="cell-title">@item.Name</span>
+                                </div>
+                            </td>
+                            <td class="cell-muted">@(item.Category?.Name ?? "—")</td>
+                            <td>
+                                @if (item.DiscountPrice.HasValue)
+                                {
+                                    <strong>$@item.DiscountPrice.Value.ToString("0.00")</strong>
+                                    <span class="cell-muted"><del>$@item.Price.ToString("0.00")</del></span>
+                                }
+                                else
+                                {
+                                    <span>$@item.Price.ToString("0.00")</span>
+                                }
+                            </td>
+                            <td>
+                                <span class="badge @(item.StockQuantity > 5 ? "badge--success" : "badge--warning")">
+                                    @item.StockQuantity left
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge @(item.IsActive ? "badge--success" : "badge--neutral")">
+                                    @(item.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td class="cell-muted">@item.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            <td class="actions-cell">
+                                <div class="table-actions">
+                                    <a asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary btn-sm" title="Edit">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <a asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm" title="Delete">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <div class="empty-state__icon"><i class="fa-solid fa-box-open"></i></div>
+                                <h3>No products found</h3>
+                                <p>Try adjusting your search query or filters.</p>
+                                <a asp-controller="Product" asp-action="Create" class="btn btn-primary">
+                                    <i class="fa-solid fa-plus"></i> Add Product
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let searchTimer;
+        const searchInput = document.getElementById('liveSearchInput');
+        const filterForm = document.getElementById('productFilterForm');
+
+        if (searchInput && filterForm) {
+            if (searchInput.value) {
+                const len = searchInput.value.length;
+                searchInput.setSelectionRange(len, len);
+                searchInput.focus();
+            }
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(() => {
+                    filterForm.submit();
+                }, 400);
+            });
+        }
+    </script>
+}

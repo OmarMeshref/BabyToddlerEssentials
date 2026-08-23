@@ -182,9 +182,9 @@ namespace BabyToddlerEssentials.Controllers
         // =========================================================
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<IActionResult> Manage(string? search, int page = 1)
+        public async Task<IActionResult> Manage(string? search, int? categoryId, string? sort, int page = 1)
         {
-            const int pageSize = 10;
+            const int pageSize = 15;
             if (page < 1) page = 1;
 
             var query = _context.Products
@@ -198,19 +198,37 @@ namespace BabyToddlerEssentials.Controllers
                 query = query.Where(p => p.Name.Contains(term) || p.Category.Name.Contains(term));
             }
 
+            if (categoryId.HasValue && categoryId.Value > 0)
+            {
+                query = query.Where(p => p.CategoryId == categoryId.Value);
+            }
+
+            // Sorting
+            query = sort switch
+            {
+                "price_asc" => query.OrderBy(p => p.DiscountPrice ?? p.Price),
+                "price_desc" => query.OrderByDescending(p => p.DiscountPrice ?? p.Price),
+                "stock_asc" => query.OrderBy(p => p.StockQuantity),
+                "stock_desc" => query.OrderByDescending(p => p.StockQuantity),
+                "name" => query.OrderBy(p => p.Name),
+                _ => query.OrderByDescending(p => p.CreatedAt) // Default newest
+            };
+
             var totalCount = await query.CountAsync();
 
             var products = await query
-                .OrderByDescending(p => p.CreatedAt)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
             ViewBag.Search = search;
+            ViewBag.CategoryId = categoryId;
+            ViewBag.Sort = sort;
             ViewBag.Page = page;
             ViewBag.TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            ViewBag.Categories = await GetCategoriesAsync();
 
-            return View(products);
+            return View("/Views/Admin/products/Index.cshtml", products);
         }
 
         // =========================================================
@@ -225,7 +243,7 @@ namespace BabyToddlerEssentials.Controllers
                 IsActive = true,
                 Categories = await GetCategoriesAsync()
             };
-            return View(vm);
+            return View("/Views/Admin/products/Create.cshtml", vm);
         }
 
         [Authorize(Roles = "Admin")]
@@ -239,7 +257,7 @@ namespace BabyToddlerEssentials.Controllers
             if (!ModelState.IsValid)
             {
                 vm.Categories = await GetCategoriesAsync();
-                return View(vm);
+                return View("/Views/Admin/products/Create.cshtml", vm);
             }
 
             var product = new Product
@@ -297,7 +315,7 @@ namespace BabyToddlerEssentials.Controllers
                 Categories = await GetCategoriesAsync()
             };
 
-            return View(vm);
+            return View("/Views/Admin/products/Edit.cshtml", vm);
         }
 
         [Authorize(Roles = "Admin")]
@@ -317,7 +335,7 @@ namespace BabyToddlerEssentials.Controllers
             {
                 vm.ExistingImages = product.ProductImages.ToList();
                 vm.Categories = await GetCategoriesAsync();
-                return View(vm);
+                return View("/Views/Admin/products/Edit.cshtml", vm);
             }
 
             product.Name = vm.Name.Trim();
@@ -356,7 +374,7 @@ namespace BabyToddlerEssentials.Controllers
 
             if (product == null) return NotFound();
 
-            return View(product);
+            return View("/Views/Admin/products/Delete.cshtml", product);
         }
 
         [Authorize(Roles = "Admin")]
