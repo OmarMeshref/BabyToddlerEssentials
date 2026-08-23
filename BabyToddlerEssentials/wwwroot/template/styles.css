@@ -804,6 +804,26 @@ input[type="range"] { width: 100%; accent-color: var(--pink); }
   display: grid; place-items: center; font-size: 1.5rem;
   background: linear-gradient(135deg, #FFE0EF, #DDF3FF);
 }
+.testi-grid {
+    align-items: stretch;
+}
+
+.testi-card {
+    height: 100%;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+}
+
+    .testi-card blockquote {
+        flex: 1;
+    }
+
+.testimonials-action {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+}
 .testi-sub { color: var(--ink-soft); font-size: .84rem; font-weight: 600; }
 .star-pick { font-size: 1.8rem; color: var(--sunny); cursor: pointer; letter-spacing: 4px; user-select: none; }
 .star-pick span { cursor: pointer; }
