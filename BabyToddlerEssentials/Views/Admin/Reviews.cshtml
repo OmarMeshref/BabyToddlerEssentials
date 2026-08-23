@@ -1,0 +1,144 @@
+﻿@model IEnumerable<BabyToddlerEssentials.Models.ProductReview>
+@using BabyToddlerEssentials.Models.Enums
+@{
+    ViewData["Title"] = "Reviews";
+    Layout = "_AdminLayout";
+    var currentStatus = (ModerationStatus?)(ViewBag.CurrentStatus) ?? ModerationStatus.Pending;
+}
+
+<div class="page-head">
+    <div>
+        <h1>Reviews</h1>
+        <p>Manage product ratings and comments submitted by customers</p>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="tabs">
+        <a asp-controller="Admin" asp-action="Reviews" asp-route-status="@ModerationStatus.Pending"
+           class="tab-btn @(currentStatus == ModerationStatus.Pending ? "is-active" : "")">
+            Pending <span class="tab-count">@ViewBag.PendingCount</span>
+        </a>
+        <a asp-controller="Admin" asp-action="Reviews" asp-route-status="@ModerationStatus.Approved"
+           class="tab-btn @(currentStatus == ModerationStatus.Approved ? "is-active" : "")">
+            Approved <span class="tab-count">@ViewBag.ApprovedCount</span>
+        </a>
+        <a asp-controller="Admin" asp-action="Reviews" asp-route-status="@ModerationStatus.Rejected"
+           class="tab-btn @(currentStatus == ModerationStatus.Rejected ? "is-active" : "")">
+            Rejected <span class="tab-count">@ViewBag.RejectedCount</span>
+        </a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-scroll">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>User</th>
+                        <th>Rating</th>
+                        <th>Comment</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th class="actions-cell">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var review in Model)
+                    {
+                        var productImg = review.Product?.ProductImages?.FirstOrDefault(i => i.IsPrimary)?.ImagePath
+                                         ?? review.Product?.ProductImages?.FirstOrDefault()?.ImagePath
+                                         ?? "/images/default-product.png";
+
+                        string statusBadge = review.Status switch
+                        {
+                            ModerationStatus.Approved => "badge--success",
+                            ModerationStatus.Pending => "badge--warning",
+                            ModerationStatus.Rejected => "badge--danger",
+                            _ => "badge--neutral"
+                        };
+
+                        <tr>
+                            <td>
+                                <div class="cell-product">
+                                    <img src="@productImg" alt="@review.Product?.Name" class="cell-thumb">
+                                    <div>
+                                        <span class="cell-title">@(review.Product?.Name ?? "Product Unavailable")</span>
+                                        <small class="cell-muted">ID: @review.ProductId</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="cell-product">
+                                    <span class="avatar">
+                                        @(review.User?.UserName?.Substring(0, Math.Min(2, review.User.UserName.Length)).ToUpper() ?? "U")
+                                    </span>
+                                    <div>
+                                        <span class="cell-title">@(review.User?.UserName ?? "Anonymous")</span>
+                                        <small class="cell-muted">@(review.User?.Email ?? "—")</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="rating-stars">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= review.Rating)
+                                        {
+                                            <i class="fa-solid fa-star" style="color: #ffc107; font-size: 13px;"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-regular fa-star" style="color: var(--muted); font-size: 13px;"></i>
+                                        }
+                                    }
+                                    <strong style="margin-left: 4px; font-size: 12px;">(@review.Rating)</strong>
+                                </div>
+                            </td>
+                            <td class="cell-muted" style="max-width: 250px; line-height: 1.4;">
+                                @(string.IsNullOrWhiteSpace(review.Comment) ? "—" : review.Comment)
+                            </td>
+                            <td class="cell-muted">@review.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <span class="badge @statusBadge">
+                                    @review.Status
+                                </span>
+                            </td>
+                            <td class="actions-cell">
+                                <div class="table-actions">
+                                    @if (review.Status != ModerationStatus.Approved)
+                                    {
+                                        <form asp-controller="Admin" asp-action="ApproveReview" asp-route-id="@review.Id" method="post" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-secondary btn-sm" title="Approve Review" style="color: #198754;">
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    @if (review.Status != ModerationStatus.Rejected)
+                                    {
+                                        <form asp-controller="Admin" asp-action="RejectReview" asp-route-id="@review.Id" method="post" style="display:inline;" onsubmit="return confirm('Reject this review?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Reject Review">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state__icon"><i class="fa-solid fa-star"></i></div>
+            <h3>No @currentStatus.ToString().ToLower() reviews</h3>
+            <p>Reviews under this category will show up here as customers submit them.</p>
+        </div>
+    }
+</div>
