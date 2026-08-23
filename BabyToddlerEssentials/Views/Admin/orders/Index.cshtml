@@ -1,0 +1,135 @@
+﻿@model IEnumerable<BabyToddlerEssentials.Models.Order>
+@{
+    ViewData["Title"] = "Orders";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-head">
+    <div>
+        <h1>Orders</h1>
+        <p>Track and manage customer orders</p>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="toolbar">
+        <div class="search-input">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="orderIdSearch" placeholder="Search by Order #, customer name, or email..." oninput="filterOrders()">
+        </div>
+
+        <select class="select-control" id="orderStatusFilter" onchange="filterOrders()">
+            <option value="">All Status</option>
+            <option value="Processing">Processing</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+        </select>
+    </div>
+
+    <div class="table-scroll">
+        <table class="data-table" id="ordersTable">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Items</th>
+                    <th>Total</th>
+                    <th>Payment</th>
+                    <th>Status</th>
+                    <th class="actions-cell">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var order in Model)
+                    {
+                        string statusBadgeClass = order.Status switch
+                        {
+                            BabyToddlerEssentials.Models.Enums.OrderStatus.Completed => "badge--success",
+                            BabyToddlerEssentials.Models.Enums.OrderStatus.Processing => "badge--warning",
+                            BabyToddlerEssentials.Models.Enums.OrderStatus.Cancelled => "badge--neutral",
+                            _ => "badge--neutral"
+                        };
+
+                        <tr class="order-row" data-status="@order.Status.ToString()">
+                            <td>
+                                <strong>#@order.Id</strong>
+                            </td>
+                            <td>
+                                <div class="cell-product">
+                                    <span class="avatar">
+                                        @(string.IsNullOrEmpty(order.CustomerName) ? "CU" : order.CustomerName.Substring(0, Math.Min(2, order.CustomerName.Length)).ToUpper())
+                                    </span>
+                                    <div>
+                                        <span class="cell-title">@order.CustomerName</span>
+                                        <small class="cell-muted">@(order.User?.Email ?? order.PhoneNumber)</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="cell-muted">@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                            <td>@(order.OrderItems?.Sum(i => i.Quantity) ?? 0) pcs</td>
+                            <td>
+                                <strong>$@order.TotalAmount.ToString("0.00")</strong>
+                            </td>
+                            <td>
+                                <span class="badge @(order.IsPaid ? "badge--success" : "badge--warning")">
+                                    @(order.IsPaid ? "Paid" : "Pending")
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge @statusBadgeClass">
+                                    @order.Status
+                                </span>
+                            </td>
+                            <td class="actions-cell">
+                                <div class="table-actions">
+                                    <a asp-controller="Admin" asp-action="OrderDetails" asp-route-id="@order.Id" class="btn btn-secondary btn-sm" title="View Details">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="8">
+                            <div class="empty-state">
+                                <div class="empty-state__icon"><i class="fa-solid fa-bag-shopping"></i></div>
+                                <h3>No orders yet</h3>
+                                <p>Orders will appear here as customers check out.</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterOrders() {
+            const searchVal = document.getElementById('orderIdSearch').value.toLowerCase().trim();
+            const selectedStatus = document.getElementById('orderStatusFilter').value.toLowerCase();
+            const rows = document.querySelectorAll('#ordersTable tbody tr.order-row');
+
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                const rowStatus = (row.getAttribute('data-status') || '').toLowerCase();
+
+                const matchesSearch = text.includes(searchVal);
+                const matchesStatus = selectedStatus === '' || rowStatus === selectedStatus;
+
+                if (matchesSearch && matchesStatus) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+}

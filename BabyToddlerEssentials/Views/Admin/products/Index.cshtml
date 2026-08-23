@@ -80,12 +80,12 @@
                             <td>
                                 @if (item.DiscountPrice.HasValue)
                                 {
-                                    <strong>$@item.DiscountPrice.Value.ToString("0.00")</strong>
+                                    <strong>@item.DiscountPrice.Value.ToString("0.00") JOD</strong>
                                     <span class="cell-muted"><del>$@item.Price.ToString("0.00")</del></span>
                                 }
                                 else
                                 {
-                                    <span>$@item.Price.ToString("0.00")</span>
+                                    <span>@item.Price.ToString("0.00") JOD</span>
                                 }
                             </td>
                             <td>

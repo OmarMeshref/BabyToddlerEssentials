@@ -48,7 +48,7 @@ namespace BabyToddlerEssentials.Controllers
             }
 
             var orders = await ordersQuery.OrderByDescending(o => o.OrderDate).ToListAsync();
-            return View(orders);
+            return View("/Views/Admin/Orders/Index.cshtml", orders);
         }
 
         public async Task<IActionResult> OrderDetails(int id)
@@ -64,7 +64,7 @@ namespace BabyToddlerEssentials.Controllers
                 return NotFound();
             }
 
-            return View(order);
+            return View("/Views/Admin/Orders/OrderDetails.cshtml", order);
         }
 
         [HttpPost]
@@ -88,8 +88,15 @@ namespace BabyToddlerEssentials.Controllers
 
         public async Task<IActionResult> Reviews(ModerationStatus? status)
         {
+            
+            ViewBag.PendingCount = await _context.ProductReviews.CountAsync(r => r.Status == ModerationStatus.Pending);
+            ViewBag.ApprovedCount = await _context.ProductReviews.CountAsync(r => r.Status == ModerationStatus.Approved);
+            ViewBag.RejectedCount = await _context.ProductReviews.CountAsync(r => r.Status == ModerationStatus.Rejected);
+            ViewBag.CurrentStatus = status;
+
             var reviewsQuery = _context.ProductReviews
                 .Include(r => r.Product)
+                    .ThenInclude(p => p.ProductImages)
                 .Include(r => r.User)
                 .AsQueryable();
 
@@ -97,11 +104,15 @@ namespace BabyToddlerEssentials.Controllers
             {
                 reviewsQuery = reviewsQuery.Where(r => r.Status == status.Value);
             }
+            else
+            {
+                
+                reviewsQuery = reviewsQuery.Where(r => r.Status == ModerationStatus.Pending);
+            }
 
             var reviews = await reviewsQuery.OrderByDescending(r => r.CreatedAt).ToListAsync();
             return View(reviews);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApproveReview(int id)
@@ -131,8 +142,14 @@ namespace BabyToddlerEssentials.Controllers
         }
 
         // ================= 5. Manage Testimonials =================
+       
         public async Task<IActionResult> Testimonials(ModerationStatus? status)
         {
+            ViewBag.PendingCount = await _context.Testimonials.CountAsync(t => t.Status == ModerationStatus.Pending);
+            ViewBag.ApprovedCount = await _context.Testimonials.CountAsync(t => t.Status == ModerationStatus.Approved);
+            ViewBag.RejectedCount = await _context.Testimonials.CountAsync(t => t.Status == ModerationStatus.Rejected);
+            ViewBag.CurrentStatus = status;
+
             var testimonialsQuery = _context.Testimonials
                 .Include(t => t.User)
                 .AsQueryable();
@@ -141,11 +158,15 @@ namespace BabyToddlerEssentials.Controllers
             {
                 testimonialsQuery = testimonialsQuery.Where(t => t.Status == status.Value);
             }
+            else
+            {
+                
+                testimonialsQuery = testimonialsQuery.Where(t => t.Status == ModerationStatus.Pending);
+            }
 
             var testimonials = await testimonialsQuery.OrderByDescending(t => t.CreatedAt).ToListAsync();
             return View(testimonials);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ApproveTestimonial(int id)

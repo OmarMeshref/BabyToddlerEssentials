@@ -1,0 +1,130 @@
+﻿@model IEnumerable<BabyToddlerEssentials.Models.Testimonial>
+@using BabyToddlerEssentials.Models.Enums
+@{
+    ViewData["Title"] = "Testimonials";
+    Layout = "_AdminLayout";
+    var currentStatus = (ModerationStatus?)(ViewBag.CurrentStatus) ?? ModerationStatus.Pending;
+}
+
+<div class="page-head">
+    <div>
+        <h1>Testimonials</h1>
+        <p>Curate the testimonials shown on your public website</p>
+    </div>
+</div>
+
+<div class="panel">
+    <div class="tabs">
+        <a asp-controller="Admin" asp-action="Testimonials" asp-route-status="@ModerationStatus.Pending"
+           class="tab-btn @(currentStatus == ModerationStatus.Pending ? "is-active" : "")">
+            Pending <span class="tab-count">@ViewBag.PendingCount</span>
+        </a>
+        <a asp-controller="Admin" asp-action="Testimonials" asp-route-status="@ModerationStatus.Approved"
+           class="tab-btn @(currentStatus == ModerationStatus.Approved ? "is-active" : "")">
+            Approved <span class="tab-count">@ViewBag.ApprovedCount</span>
+        </a>
+        <a asp-controller="Admin" asp-action="Testimonials" asp-route-status="@ModerationStatus.Rejected"
+           class="tab-btn @(currentStatus == ModerationStatus.Rejected ? "is-active" : "")">
+            Rejected <span class="tab-count">@ViewBag.RejectedCount</span>
+        </a>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-scroll">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Rating</th>
+                        <th>Message</th>
+                        <th>Submitted Date</th>
+                        <th>Status</th>
+                        <th class="actions-cell">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        string statusBadge = item.Status switch
+                        {
+                            ModerationStatus.Approved => "badge--success",
+                            ModerationStatus.Pending => "badge--warning",
+                            ModerationStatus.Rejected => "badge--danger",
+                            _ => "badge--neutral"
+                        };
+
+                        <tr>
+                            <td>
+                                <div class="cell-product">
+                                    <span class="avatar">
+                                        @(item.User?.UserName?.Substring(0, Math.Min(2, item.User.UserName.Length)).ToUpper() ?? "U")
+                                    </span>
+                                    <div>
+                                        <span class="cell-title">@(item.User?.UserName ?? "Customer")</span>
+                                        <small class="cell-muted">@(item.User?.Email ?? "—")</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="rating-stars">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= item.Rating)
+                                        {
+                                            <i class="fa-solid fa-star" style="color: #ffc107; font-size: 13px;"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa-regular fa-star" style="color: var(--muted); font-size: 13px;"></i>
+                                        }
+                                    }
+                                    <strong style="margin-left: 4px; font-size: 12px;">(@item.Rating)</strong>
+                                </div>
+                            </td>
+                            <td class="cell-muted" style="max-width: 350px; line-height: 1.4;">
+                                "@item.Message"
+                            </td>
+                            <td class="cell-muted">@item.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            <td>
+                                <span class="badge @statusBadge">
+                                    @item.Status
+                                </span>
+                            </td>
+                            <td class="actions-cell">
+                                <div class="table-actions">
+                                    @if (item.Status != ModerationStatus.Approved)
+                                    {
+                                        <form asp-controller="Admin" asp-action="ApproveTestimonial" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-secondary btn-sm" title="Approve Testimonial" style="color: #198754;">
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    @if (item.Status != ModerationStatus.Rejected)
+                                    {
+                                        <form asp-controller="Admin" asp-action="RejectTestimonial" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('Reject this testimonial?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Reject Testimonial">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <div class="empty-state__icon"><i class="fa-solid fa-quote-right"></i></div>
+            <h3>No @currentStatus.ToString().ToLower() testimonials</h3>
+            <p>Customer testimonials submitted on the storefront will appear here.</p>
+        </div>
+    }
+</div>
