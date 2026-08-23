@@ -1,0 +1,103 @@
+﻿@model BabyToddlerEssentials.ViewModels.OrderListVM
+@using BabyToddlerEssentials.Models.Enums
+
+@{
+    ViewData["Title"] = "My Orders";
+    ViewData["Page"] = "orders";
+}
+
+<style>
+    .order-preview {
+        display: flex;
+        gap: 6px;
+        margin: 10px 0;
+        flex-wrap: wrap;
+    }
+
+        .order-preview .o-thumb {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #fbe8f1;
+            display: grid;
+            place-items: center;
+            font-size: 1.2rem;
+        }
+
+            .order-preview .o-thumb img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+        .order-preview .o-more {
+            font-weight: 700;
+            color: #888;
+            align-self: center;
+        }
+
+    .status--cancelled {
+        background: #ffe0e0;
+        color: #c0392b;
+    }
+</style>
+
+<section class="section">
+    <div class="wrap">
+
+        <div class="page-head">
+            <span class="eyebrow">📦 Orders</span>
+            <h1>My orders</h1>
+        </div>
+
+        @if (Model.HasNoOrders)
+        {
+            <div class="empty">
+                <div class="big">📦</div>
+                <h3>No orders yet</h3>
+                <p>When you place an order, it’ll show up here.</p>
+                <a asp-controller="Product" asp-action="Index" class="btn">Start shopping</a>
+            </div>
+        }
+        else
+        {
+            <!-- ===== Current orders ===== -->
+            <h2 style="margin-bottom:16px;">Current orders</h2>
+            @if (Model.CurrentOrders.Any())
+            {
+                <div class="orders-list">
+                    @foreach (var order in Model.CurrentOrders.OrderByDescending(o => o.OrderDate))
+                    {
+                        <partial name="_OrderCard" model="order" />
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="meta" style="margin-bottom:32px;">You have no current orders.</p>
+            }
+
+            <!-- ===== Previous orders ===== -->
+            <h2 style="margin:32px 0 16px;">Previous orders</h2>
+            @if (Model.PreviousOrders.Any())
+            {
+                <div class="orders-list">
+                    @foreach (var order in Model.PreviousOrders.OrderByDescending(o => o.OrderDate))
+                    {
+                        <partial name="_OrderCard" model="order" />
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="meta">You have no previous orders.</p>
+            }
+        }
+
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ToastTrigger" />
+}

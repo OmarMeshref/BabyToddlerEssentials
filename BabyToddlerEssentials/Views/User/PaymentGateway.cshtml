@@ -1,0 +1,144 @@
+﻿@model BabyToddlerEssentials.Services.CartView
+
+@{
+    ViewData["Title"] = "Secure Payment";
+    ViewData["Page"] = "checkout";
+}
+
+<style>
+    .gateway-wrap {
+        max-width: 460px;
+        margin: 40px auto;
+    }
+
+    .gateway-card {
+        background: #fff;
+        border-radius: 24px;
+        padding: 32px;
+        box-shadow: 0 18px 50px rgba(0,0,0,.12);
+        text-align: center;
+        position: relative;
+    }
+
+    .gateway-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #f3f4f6;
+        color: #555;
+        font-weight: 700;
+        font-size: .8rem;
+        padding: 6px 14px;
+        border-radius: 999px;
+        margin-bottom: 18px;
+    }
+
+    .gateway-amount {
+        font-size: 2.6rem;
+        font-weight: 800;
+        margin: 8px 0 4px;
+    }
+
+    .gateway-sub {
+        color: #888;
+        margin-bottom: 24px;
+    }
+
+    .gateway-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    /* Spinner overlay */
+    .gateway-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(255,255,255,.92);
+        border-radius: 24px;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+    }
+
+        .gateway-overlay.show {
+            display: flex;
+        }
+
+    .spinner {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        border: 5px solid #f0d9e6;
+        border-top-color: var(--pink, #ff5ea8);
+        animation: spin .8s linear infinite;
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<section class="section">
+    <div class="gateway-wrap">
+        <div class="gateway-card">
+
+            <div class="gateway-badge">🔒 Secure payment</div>
+
+            <h2 style="margin:0;">Jellybean Pay</h2>
+            <p class="gateway-sub">Complete your payment to place the order</p>
+
+            <div class="gateway-amount">@Model.Total.ToString("C")</div>
+            <div class="gateway-sub">@Model.ItemCount item(s)</div>
+
+            <div class="gateway-actions">
+                <!-- PAY -->
+                <form asp-controller="User" asp-action="PaymentCallback" method="post" id="payForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="success" value="true" />
+                    <button type="submit" class="btn btn--block" id="payBtn">Pay @Model.Total.ToString("C")</button>
+                </form>
+
+                <!-- CANCEL -->
+                <form asp-controller="User" asp-action="PaymentCallback" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="success" value="false" />
+                    <button type="submit" class="btn btn--ghost btn--block btn--sm">Cancel payment</button>
+                </form>
+            </div>
+
+            <!-- Fake processing overlay -->
+            <div class="gateway-overlay" id="overlay">
+                <div class="spinner"></div>
+                <div style="font-weight:700;">Processing payment…</div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ToastTrigger" />
+    <script>
+        (function() {
+            const form = document.getElementById("payForm");
+            const overlay = document.getElementById("overlay");
+            const payBtn = document.getElementById("payBtn");
+            if (!form) return;
+
+            form.addEventListener("submit", function(e) {
+                // Show the fake spinner, then submit for real after a short delay
+                if (!payBtn.dataset.submitting) {
+                    e.preventDefault();
+                    payBtn.dataset.submitting = "1";
+                    overlay.classList.add("show");
+                    setTimeout(function() { form.submit(); }, 1500);
+                }
+            });
+        })();
+    </script>
+}

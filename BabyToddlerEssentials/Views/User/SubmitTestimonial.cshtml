@@ -1,0 +1,91 @@
+﻿@model BabyToddlerEssentials.ViewModels.TestimonialInputVM
+
+@{
+    ViewData["Title"] = "Share Your Experience";
+    ViewData["Page"] = "reviews";
+}
+
+<section class="section">
+    <div class="wrap" style="max-width:640px;">
+
+        <a asp-controller="User" asp-action="Reviews" class="link-back">← Back to reviews</a>
+
+        <div class="page-head" style="text-align:center;">
+            <span class="eyebrow">✍️ Testimonial</span>
+            <h1>Share your experience</h1>
+            <p class="section-sub">Tell other families what you think of Jellybean.</p>
+        </div>
+
+        <form asp-controller="User" asp-action="SubmitTestimonial" method="post" class="form-card">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="auth-msg bad"></div>
+
+            <!-- Rating -->
+            <div class="field">
+                <label>Your rating</label>
+                <div class="star-pick" id="starPick">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <span data-value="@i">☆</span>
+                    }
+                </div>
+                <input type="hidden" asp-for="Rating" id="ratingInput" value="0" />
+                <span asp-validation-for="Rating" class="err"></span>
+                <span class="err" id="ratingErr" style="display:none;">Please choose a rating.</span>
+            </div>
+
+            <!-- Message -->
+            <div class="field">
+                <label asp-for="Message"></label>
+                <textarea asp-for="Message" rows="4" maxlength="1000"
+                          placeholder="What did you love about shopping with us?"></textarea>
+                <span asp-validation-for="Message" class="err"></span>
+            </div>
+
+            <button type="submit" class="btn btn--block">Submit testimonial</button>
+            <p class="meta" style="text-align:center;margin-top:12px;">
+                Your testimonial will appear after admin approval.
+            </p>
+        </form>
+
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ToastTrigger" />
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Clickable star rating
+        (function() {
+            const pick = document.getElementById("starPick");
+            if (!pick) return;
+            const stars = pick.querySelectorAll("span");
+            const input = document.getElementById("ratingInput");
+            const err = document.getElementById("ratingErr");
+
+            function paint(value) {
+                stars.forEach(function(s) {
+                    s.textContent = (parseInt(s.dataset.value) <= value) ? "★" : "☆";
+                });
+            }
+
+            stars.forEach(function(s) {
+                s.addEventListener("click", function() {
+                    const val = parseInt(s.dataset.value);
+                    input.value = val;
+                    paint(val);
+                    if (err) err.style.display = "none";
+                });
+            });
+
+            const form = pick.closest("form");
+            form.addEventListener("submit", function(e) {
+                if (parseInt(input.value) < 1) {
+                    e.preventDefault();
+                    if (err) err.style.display = "block";
+                }
+            });
+        })();
+    </script>
+}

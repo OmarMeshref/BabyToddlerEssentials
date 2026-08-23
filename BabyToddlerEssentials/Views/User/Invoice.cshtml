@@ -1,0 +1,96 @@
+﻿@model BabyToddlerEssentials.ViewModels.OrderDetailsVM
+
+@{
+    ViewData["Title"] = $"Invoice #{Model.Order.Id}";
+    ViewData["Page"] = "orders";
+    var order = Model.Order;
+}
+
+<section class="section">
+    <div class="wrap">
+
+        <!-- actions (hidden when printing) -->
+        <div class="inv-actions no-print" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
+            <a asp-controller="User" asp-action="OrderDetails" asp-route-id="@order.Id" class="link-back">← Back to order</a>
+            <button type="button" class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        </div>
+
+        <!-- ===== Invoice ===== -->
+        <div class="invoice">
+
+            <!-- header -->
+            <div class="inv-top">
+                <div class="inv-brand">
+                    <span class="bean">🍬</span>
+                    <div>
+                        <div>Jellybean</div>
+                        <div class="inv-brand-sub">Baby &amp; Toddler Essentials</div>
+                    </div>
+                </div>
+                <div class="inv-title">
+                    <h2>Invoice</h2>
+                    <div class="inv-num">#@order.Id</div>
+                </div>
+            </div>
+
+            <!-- parties -->
+            <div class="inv-parties">
+                <div>
+                    <span class="inv-label">Bill to</span>
+                    <strong>@order.CustomerName</strong><br />
+                    @order.PhoneNumber<br />
+                    @order.ShippingAddress<br />
+                    @order.City
+                </div>
+                <div>
+                    <span class="inv-label">Details</span>
+                    <div class="inv-kv"><span>Date</span><span>@order.OrderDate.ToString("MMM d, yyyy")</span></div>
+                    <div class="inv-kv"><span>Status</span><span>@order.Status</span></div>
+                    <div class="inv-kv"><span>Payment</span><span>@(order.IsPaid ? "Paid" : "Unpaid")</span></div>
+                </div>
+            </div>
+
+            <!-- items -->
+            <table class="inv-table">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th class="num">Unit price</th>
+                        <th class="num">Qty</th>
+                        <th class="num">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in order.OrderItems)
+                    {
+                        <tr>
+                            <td>@(item.Product?.Name ?? "Product")</td>
+                            <td class="num">@item.UnitPrice.ToString("C")</td>
+                            <td class="num">@item.Quantity</td>
+                            <td class="num">@((item.UnitPrice * item.Quantity).ToString("C"))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <!-- totals -->
+            <div class="inv-totals">
+                <div class="inv-kv"><span>Subtotal</span><span>@order.TotalAmount.ToString("C")</span></div>
+                <div class="inv-kv"><span>Shipping</span><span>Free</span></div>
+                <div class="inv-kv inv-grand"><span>Total</span><span>@order.TotalAmount.ToString("C")</span></div>
+            </div>
+
+            <!-- footer -->
+            <div class="inv-foot">
+                Thank you for shopping with Jellybean! 🧸<br />
+                This invoice was generated for order #@order.Id on @order.OrderDate.ToString("MMM d, yyyy").
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ToastTrigger" />
+}

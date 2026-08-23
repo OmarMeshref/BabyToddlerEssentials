@@ -1,0 +1,226 @@
+﻿@model BabyToddlerEssentials.ViewModels.ProductListVM
+
+@{
+    ViewData["Title"] = "Shop";
+    ViewData["Page"] = "shop";
+}
+
+<style>
+    /* Make the results column fill its grid track and center the empty state */
+    .shop-results {
+        min-height: 200px;
+    }
+
+    .shop-results .empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        min-height: 320px;
+    }
+
+    /* Keep the price inputs inside the filter card */
+    .filters .field-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .filters .field-grid .field {
+            width: 100%;
+            box-sizing: border-box; /* padding/border no longer push the box wider */
+            min-width: 0; /* lets the input shrink inside the grid cell */
+        }
+
+    /* Space between the Apply filters and Clear all buttons */
+    .filters .btn--block + .btn--block {
+        margin-top: 12px;
+</style>
+
+
+<!-- ===== Page header ===== -->
+<section class="about-hero">
+    <div class="wrap">
+        <span class="eyebrow">🛍️ Shop</span>
+        <h1>Little things for little ones</h1>
+        <p>Browse our baby &amp; toddler essentials — filter by category, price, and more.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="wrap">
+
+        <!-- ===== Search + sort bar (GET so filters live in the URL) ===== -->
+        <form asp-controller="Product" asp-action="Index" method="get" class="shop-topbar reveal">
+
+            <div class="search-box">
+                <span>🔍</span>
+                <input type="search"
+                       name="search"
+                       value="@Model.Search"
+                       placeholder="Search products or categories..."
+                       aria-label="Search products" />
+            </div>
+
+            <select name="sort" class="select" aria-label="Sort products" onchange="this.form.submit()">
+                <option value="">Newest</option>
+                <option value="price_asc" selected="@(Model.Sort == "price_asc")">Price: low to high</option>
+                <option value="price_desc" selected="@(Model.Sort == "price_desc")">Price: high to low</option>
+                <option value="name" selected="@(Model.Sort == "name")">Name (A–Z)</option>
+            </select>
+
+            <button class="btn btn--sky" type="submit">Search</button>
+
+            <span class="result-count">@Model.TotalCount item(s)</span>
+        </form>
+
+        <div class="shop-wrap">
+
+            <!-- ===== Sidebar filters ===== -->
+            <aside class="filters reveal">
+
+                <form asp-controller="Product" asp-action="Index" method="get">
+
+                    <!-- keep the search term when filtering -->
+                    <input type="hidden" name="search" value="@Model.Search" />
+                    <input type="hidden" name="sort" value="@Model.Sort" />
+
+                    <div class="filter-group">
+                        <span class="label">Category</span>
+                        <select name="categoryId" class="select">
+                            <option value="">All categories</option>
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <option value="@cat.Id" selected="@(Model.CategoryId == cat.Id)">@cat.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <span class="label">Price range</span>
+                        <div class="field-grid">
+                            <input class="field" type="number" name="minPrice" min="0" step="0.01"
+                                   value="@(Model.MinPrice)" placeholder="Min" aria-label="Minimum price" />
+                            <input class="field" type="number" name="maxPrice" min="0" step="0.01"
+                                   value="@(Model.MaxPrice)" placeholder="Max" aria-label="Maximum price" />
+                        </div>
+                    </div>
+
+                    <button class="btn btn--block" type="submit">Apply filters</button>
+                    <a asp-controller="Product" asp-action="Index" class="btn btn--ghost btn--block btn--sm">Clear all</a>
+
+                </form>
+
+            </aside>
+
+            <!-- ===== Product grid column ===== -->
+            <div class="shop-results">
+                @if (!Model.Products.Any())
+                {
+                    <div class="empty">
+                        <div class="big">🧸</div>
+                        <h3>No products found</h3>
+                        <p>Try adjusting your search or filters.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="product-grid">
+                        @foreach (var p in Model.Products)
+                        {
+                            <article class="card reveal">
+
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="card-media bg-a">
+                                    @if (!string.IsNullOrEmpty(p.PrimaryImagePath))
+                                    {
+                                        <img src="@p.PrimaryImagePath" alt="@p.Name" class="template-product-image" />
+                                    }
+                                    else
+                                    {
+                                        <span class="emoji">🧸</span>
+                                    }
+                                    @if (!p.InStock)
+                                    {
+                                        <span class="age-badge">Out of stock</span>
+                                    }
+                                </a>
+
+                                <div class="card-body">
+                                    <span class="card-cat">@p.CategoryName</span>
+
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id">
+                                        <h3 class="card-title">@p.Name</h3>
+                                    </a>
+
+                                    <div class="card-rating">
+                                        @if (p.ReviewCount > 0)
+                                        {
+                                            <span class="stars">★</span> 
+                                            @p.AverageRating.ToString("0.0")
+                                            <span class="review-date">(@p.ReviewCount)</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="review-date">No reviews yet</span>
+                                        }
+                                    </div>
+
+                                    <div class="card-foot">
+                                        <div class="price">
+                                            @if (p.DiscountPrice.HasValue)
+                                            {
+                                                <span>@p.DiscountPrice.Value.ToString("C")</span>
+                                                <span class="was">@p.Price.ToString("C")</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@p.Price.ToString("C")</span>
+                                            }
+                                        </div>
+
+                                        <!-- Add to cart (works without login) -->
+                                        <form asp-controller="User" asp-action="AddToCart" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="productId" value="@p.Id" />
+                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                                            <button class="add-btn" type="submit" title="Add to cart"
+                                                @(p.InStock ? "" : "disabled")>
+                                                🛒
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+
+                            </article>
+                        }
+                    </div>
+
+                    <!-- ===== Paging ===== -->
+                    @if (Model.TotalPages > 1)
+                    {
+                        <div class="chip-row" style="justify-content:center; margin-top:32px;">
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <a class="chip @(i == Model.Page ? "on" : "")"
+                                   asp-controller="Product" asp-action="Index"
+                                   asp-route-search="@Model.Search"
+                                   asp-route-categoryId="@Model.CategoryId"
+                                   asp-route-minPrice="@Model.MinPrice"
+                                   asp-route-maxPrice="@Model.MaxPrice"
+                                   asp-route-sort="@Model.Sort"
+                                   asp-route-page="@i">@i</a>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <!-- Toast: show any TempData messages via the template's window.toast() -->
+    <partial name="_ToastTrigger" />
+}

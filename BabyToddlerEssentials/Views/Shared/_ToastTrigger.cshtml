@@ -1,0 +1,29 @@
+﻿@* Reads TempData messages and shows them using the template's global window.toast().
+   Included via @section Scripts in each of my views (layout stays untouched). *@
+
+@{
+    var success = TempData["SuccessMessage"] as string;
+    var error = TempData["ErrorMessage"] as string;
+    var info = TempData["InfoMessage"] as string;
+}
+
+@if (!string.IsNullOrEmpty(success) || !string.IsNullOrEmpty(error) || !string.IsNullOrEmpty(info))
+{
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            if (typeof window.toast !== "function") return;
+            @if (!string.IsNullOrEmpty(success))
+                {
+                    @:window.toast(@Html.Raw(Json.Serialize(success)), "Success");
+            }
+                @if (!string.IsNullOrEmpty(error))
+                {
+                    @:window.toast(@Html.Raw(Json.Serialize(error)), "Error");
+            }
+                @if (!string.IsNullOrEmpty(info))
+                {
+                    @:window.toast(@Html.Raw(Json.Serialize(info)));
+            }
+                });
+    </script>
+}

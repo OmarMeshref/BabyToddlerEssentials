@@ -1,0 +1,58 @@
+﻿@model BabyToddlerEssentials.Models.Order
+@using BabyToddlerEssentials.Models.Enums
+
+@{
+    string statusClass = Model.Status switch
+    {
+        OrderStatus.Processing => "status--processing",
+        OrderStatus.Completed => "status--delivered",
+        OrderStatus.Cancelled => "status--cancelled",
+        _ => "status--processing"
+    };
+
+    var items = Model.OrderItems.ToList();
+    var totalItems = items.Sum(i => i.Quantity);
+}
+
+<article class="order-card">
+    <div class="order-head">
+        <div>
+            <span class="order-id">Order #@Model.Id</span>
+            <span class="order-date">@Model.OrderDate.ToString("MMM d, yyyy")</span>
+        </div>
+        <span class="status @statusClass">@Model.Status</span>
+    </div>
+
+    <!-- item image preview -->
+    <div class="order-preview">
+        @foreach (var item in items.Take(4))
+        {
+            var img = item.Product?.ProductImages?.FirstOrDefault(i => i.IsPrimary)?.ImagePath
+                      ?? item.Product?.ProductImages?.FirstOrDefault()?.ImagePath;
+            <span class="o-thumb">
+                @if (!string.IsNullOrEmpty(img))
+                {
+                    <img src="@img" alt="@item.Product?.Name" />
+                }
+                else
+                {
+                    <span>🧸</span>
+                }
+            </span>
+        }
+        @if (items.Count > 4)
+        {
+            <span class="o-more">+@(items.Count - 4)</span>
+        }
+    </div>
+
+    <div class="order-body">
+        <span class="order-meta">@totalItems item(s)</span>
+        <span class="line-price">@Model.TotalAmount.ToString("C")</span>
+    </div>
+
+    <div class="order-actions">
+        <a asp-controller="User" asp-action="OrderDetails" asp-route-id="@Model.Id" class="btn btn--ghost btn--sm">View details</a>
+        <a asp-controller="User" asp-action="Invoice" asp-route-id="@Model.Id" class="btn btn--sm">🧾 Invoice</a>
+    </div>
+</article>

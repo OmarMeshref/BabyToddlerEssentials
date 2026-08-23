@@ -1,0 +1,119 @@
+﻿@model BabyToddlerEssentials.Services.CartView
+
+@{
+    ViewData["Title"] = "Your Cart";
+    ViewData["Page"] = "cart";
+}
+
+<section class="section">
+    <div class="wrap">
+
+        <div class="page-head">
+            <span class="eyebrow">🛒 Shopping cart</span>
+            <h1>Your cart</h1>
+        </div>
+
+        @if (Model.IsEmpty)
+        {
+            <div class="empty">
+                <div class="big">🛒</div>
+                <h3>Your cart is empty</h3>
+                <p>Looks like you haven’t added anything yet.</p>
+                <a asp-controller="Product" asp-action="Index" class="btn">Start shopping</a>
+            </div>
+        }
+        else
+        {
+            <div class="cart-layout">
+
+                <!-- ===== Cart items ===== -->
+                <div class="cart-list">
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="cart-item">
+
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="cart-thumb bg-a">
+                                @if (!string.IsNullOrEmpty(item.ImagePath))
+                                {
+                                    <img src="@item.ImagePath" alt="@item.Name" class="template-product-image" />
+                                }
+                                else
+                                {
+                                    <span class="emoji">🧸</span>
+                                }
+                            </a>
+
+                            <div class="cart-item-info" style="flex:1;">
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">
+                                    <h4 class="card-title">@item.Name</h4>
+                                </a>
+                                <div class="meta">@item.UnitPrice.ToString("C") each</div>
+
+                                <div class="row2">
+                                    <!-- quantity update -->
+                                    <form asp-controller="User" asp-action="UpdateCartQuantity" method="post" class="qty qty--sm">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <button type="submit" name="quantity" value="@(item.Quantity - 1)" title="Decrease">−</button>
+                                        <span>@item.Quantity</span>
+                                        <button type="submit" name="quantity" value="@(item.Quantity + 1)"
+                                                title="Increase" @(item.Quantity >= item.StockQuantity ? "disabled" : "")>
+                                            +
+                                        </button>
+                                    </form>
+
+                                    <!-- remove -->
+                                    <form asp-controller="User" asp-action="RemoveFromCart" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="productId" value="@item.ProductId" />
+                                        <button type="submit" class="remove">Remove</button>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="line-price">@item.Subtotal.ToString("C")</div>
+                        </div>
+                    }
+
+                    <form asp-controller="User" asp-action="ClearCart" method="post" style="margin-top:12px;">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn--ghost btn--sm">Clear cart</button>
+                    </form>
+                </div>
+
+                <!-- ===== Summary ===== -->
+                <aside class="summary">
+                    <h3>Order summary</h3>
+
+                    <div class="sum-row">
+                        <span>Items (@Model.ItemCount)</span>
+                        <span>@Model.Total.ToString("C")</span>
+                    </div>
+                    <div class="sum-row">
+                        <span>Shipping</span>
+                        <span>Free</span>
+                    </div>
+                    <div class="sum-row total">
+                        <span>Total</span>
+                        <span>@Model.Total.ToString("C")</span>
+                    </div>
+
+                    <a asp-controller="User" asp-action="Checkout" class="btn btn--block" style="margin-top:16px;">
+                        Proceed to checkout →
+                    </a>
+                    <a asp-controller="Product" asp-action="Index" class="btn btn--ghost btn--block btn--sm" style="margin-top:10px;">
+                        Continue shopping
+                    </a>
+
+                    <p class="meta" style="margin-top:12px;">🔐 You’ll need to log in at checkout.</p>
+                </aside>
+
+            </div>
+        }
+
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ToastTrigger" />
+}
