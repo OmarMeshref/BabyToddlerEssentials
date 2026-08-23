@@ -52,25 +52,7 @@
             </div>
 
 
-            <div class="hero-trust">
-
-                <div>
-                    <b>@Model.ActiveProductsCount</b>
-                    Products
-                </div>
-
-                <div>
-                    <b>@Model.ActiveCategoriesCount</b>
-                    Categories
-                </div>
-
-                <div>
-                    <b>1–5</b>
-                    Rating system
-                </div>
-
-            </div>
-
+            
         </div>
 
 
@@ -406,7 +388,6 @@
 
         <div class="wrap">
 
-
             <div class="section-head reveal">
 
                 <span class="eyebrow">
@@ -418,11 +399,10 @@
                 </h2>
 
                 <p>
-                    Testimonials approved before being displayed publicly.
+                    Hear what our customers have to say about Jellybean.
                 </p>
 
             </div>
-
 
             <div class="testi-grid reveal">
 
@@ -430,18 +410,15 @@
                 {
                     <figure class="testi-card">
 
-
                         <blockquote>
                             "@testimonial.Message"
                         </blockquote>
-
 
                         <figcaption>
 
                             <span class="testi-avatar">
                                 🙂
                             </span>
-
 
                             <span>
 
@@ -464,11 +441,22 @@
 
             </div>
 
+            <div class="section-actions">
+
+                <a asp-controller="User"
+                   asp-action="Reviews"
+                   class="btn">
+
+                    View all testimonials
+
+                </a>
+
+            </div>
+
         </div>
 
     </section>
 }
-
 
 
 <!-- =========================================
