@@ -249,28 +249,28 @@
 
                 </div>
 
-
-                <!-- Wishlist: enable later -->
-
-                <span class="icon-btn future-icon"
-                      title="Wishlist coming soon"
-                      aria-hidden="true">
+                <!-- Wishlist -->
+                <a asp-controller="User"
+                   asp-action="Wishlist"
+                   class="icon-btn @(currentPage == "wishlist" ? "active" : "")"
+                   title="Wishlist"
+                   aria-label="Wishlist">
 
                     💖
 
-                </span>
+                </a>
 
 
-                <!-- Cart: enable later -->
-
-                <span class="icon-btn future-icon"
-                      title="Shopping cart coming soon"
-                      aria-hidden="true">
+                <!-- Cart -->
+                <a asp-controller="User"
+                   asp-action="Cart"
+                   class="icon-btn @(currentPage == "cart" ? "active" : "")"
+                   title="Cart"
+                   aria-label="Shopping cart">
 
                     🛍️
 
-                </span>
-
+                </a>
 
                 <!-- MOBILE MENU -->
 
@@ -408,13 +408,19 @@
 
                 </a>
 
-                <span class="footer-future">
-                    Wishlist
-                </span>
+                <a asp-controller="User"
+                   asp-action="Wishlist">
 
-                <span class="footer-future">
+                    Wishlist
+
+                </a>
+
+                <a asp-controller="User"
+                   asp-action="Cart">
+
                     Shopping Cart
-                </span>
+
+                </a>
 
             </div>
 
