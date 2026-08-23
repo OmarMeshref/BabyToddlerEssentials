@@ -124,7 +124,15 @@
                     </a>
                 </li>
 
+                <li>
+                    <a asp-controller="User"
+                       asp-action="Reviews"
+                       class="@(currentPage == "reviews" ? "active" : "")">
 
+                        Reviews
+
+                    </a>
+                </li>
                 <li>
                     <a asp-controller="Home"
                        asp-action="About"
