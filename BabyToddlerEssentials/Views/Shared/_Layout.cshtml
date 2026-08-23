@@ -271,12 +271,18 @@
 
                 <!-- MOBILE MENU -->
 
-                <button class="icon-btn hamburger"
+                <button class="hamburger"
                         id="drawer-open"
                         type="button"
-                        aria-label="Menu">
+                        aria-label="Menu"
+                        aria-haspopup="true"
+                        aria-controls="drawer">
 
-                    ☰
+                    <span class="hamburger-bars">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
 
                 </button>
 
@@ -284,65 +290,70 @@
 
         </nav>
 
-
-        <!-- =========================
-             MOBILE DRAWER
-             ========================= -->
-
-        <div class="drawer"
-             id="drawer">
-
-            <div class="drawer-bg"
-                 id="drawer-bg">
-            </div>
+    </header>
 
 
-            <div class="drawer-panel">
+    <!-- =========================
+         MOBILE DRAWER
+         (kept as a sibling of <header>, NOT inside it —
+          .site-header has backdrop-filter, and any ancestor
+          with backdrop-filter/transform/filter becomes the
+          containing block for position:fixed children, which
+          breaks full-screen overlays)
+         ========================= -->
 
-                <button class="drawer-close"
-                        id="drawer-close"
-                        type="button"
-                        aria-label="Close menu">
+    <div class="drawer"
+         id="drawer">
 
-                    ✕
-
-                </button>
-
-
-                <a asp-controller="Home"
-                   asp-action="Index">
-
-                    Home
-
-                </a>
+        <div class="drawer-bg"
+             id="drawer-bg">
+        </div>
 
 
-                <a asp-controller="Product" asp-action="Index">
+        <div class="drawer-panel">
 
-                    Shop
+            <button class="drawer-close"
+                    id="drawer-close"
+                    type="button"
+                    aria-label="Close menu">
 
-                </a>
+                ✕
 
-
-                <a asp-controller="Categories" asp-action="Index">
-
-                    Categories
-
-                </a>
+            </button>
 
 
-                <a asp-controller="Home"
-                   asp-action="About">
+            <a asp-controller="Home"
+               asp-action="Index">
 
-                    About
+                Home
 
-                </a>
+            </a>
 
-            </div>
+
+            <a asp-controller="Product" asp-action="Index">
+
+                Shop
+
+            </a>
+
+
+            <a asp-controller="Categories" asp-action="Index">
+
+                Categories
+
+            </a>
+
+
+            <a asp-controller="Home"
+               asp-action="About">
+
+                About
+
+            </a>
 
         </div>
 
-    </header>
+    </div>
 
 
 
