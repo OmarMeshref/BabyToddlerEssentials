@@ -275,7 +275,7 @@ namespace BabyToddlerEssentials.Controllers
                 Categories = categories
             };
 
-            return View(model);
+            return View("/Views/Admin/categories/Index.cshtml", model);
         }
 
         // ADMIN

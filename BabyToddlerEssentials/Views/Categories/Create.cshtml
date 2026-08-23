@@ -1,131 +1,67 @@
 @model BabyToddlerEssentials.ViewModels.Categories.CategoriesFormViewModel
-
 @{
-    ViewData["Title"] = "Create Category";
-    ViewData["Page"] = "admin";
+    ViewData["Title"] = "Add Category";
+    Layout = "_AdminLayout";
 }
 
-<section class="page-head">
-
-    <div class="wrap">
-
-        <a asp-controller="Categories"
-           asp-action="Manage"
-           class="link-back">
-
-            ← Manage Categories
-
-        </a>
-
-        <h1>
-            Create Category
-        </h1>
-
+<div class="page-head">
+    <div>
+        <h1 id="formTitle">Add Category</h1>
+        <p>Create a new department for organizing your products</p>
     </div>
+    <a asp-controller="Categories" asp-action="Manage" class="btn btn-secondary">Cancel</a>
+</div>
 
-</section>
+<form asp-controller="Categories" asp-action="Create" method="post" enctype="multipart/form-data" style="max-width:640px;">
+    @Html.AntiForgeryToken()
 
-
-<section class="section"
-         style="padding-top:20px;">
-
-    <div class="wrap">
-
-        <div class="form-card"
-             style="max-width:700px;">
-
-            <form asp-controller="Categories"
-                  asp-action="Create"
-                  method="post"
-                  enctype="multipart/form-data">
-
-                <div asp-validation-summary="ModelOnly"
-                     class="text-danger">
-                </div>
-
-
-                <div class="field">
-
-                    <label asp-for="Name"></label>
-
-                    <input asp-for="Name"
-                           placeholder="e.g. Feeding" />
-
-                    <span asp-validation-for="Name"
-                          class="text-danger">
-                    </span>
-
-                </div>
-
-
-                <div class="field">
-
-                    <label asp-for="Description"></label>
-
-                    <textarea asp-for="Description"
-                              rows="5"
-                              placeholder="Short description...">
-                    </textarea>
-
-                    <span asp-validation-for="Description"
-                          class="text-danger">
-                    </span>
-
-                </div>
-
-
-                <div class="field">
-
-                    <label asp-for="ImageFile"></label>
-
-                    <input asp-for="ImageFile"
-                           type="file"
-                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
-
-                    <span asp-validation-for="ImageFile"
-                          class="text-danger">
-                    </span>
-
-                    <small style="color:var(--ink-soft);">
-                        JPG, PNG or WEBP · Maximum 5 MB
-                    </small>
-
-                </div>
-
-
-                <div style="
-                    display:flex;
-                    gap:10px;
-                    margin-top:20px;">
-
-                    <button class="btn"
-                            type="submit">
-
-                        Create Category
-
-                    </button>
-
-
-                    <a asp-controller="Categories"
-                       asp-action="Manage"
-                       class="btn btn--ghost">
-
-                        Cancel
-
-                    </a>
-
-                </div>
-
-            </form>
-
+    <div class="form-card">
+        <div class="form-field">
+            <label asp-for="Name">Category Name <span class="required-mark">*</span></label>
+            <input asp-for="Name" class="text-input" placeholder="e.g. Baby Clothing">
+            <span asp-validation-for="Name" class="field-error" style="display:block;"></span>
         </div>
 
+        <div class="form-field">
+            <label asp-for="Description">Description</label>
+            <textarea asp-for="Description" class="text-input" placeholder="A short description shown on the storefront..."></textarea>
+            <span asp-validation-for="Description" class="field-error" style="display:block;"></span>
+        </div>
+
+        <div class="form-field">
+            <label>Category Image</label>
+            <label class="dropzone" for="cImage" style="cursor: pointer;">
+                <i class="fa-solid fa-image"></i>
+                <p><strong>Click to upload</strong> a category image — JPG, PNG, WEBP</p>
+                <input asp-for="ImageFile" id="cImage" type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none;" onchange="previewCategoryImage(event)">
+            </label>
+            <span asp-validation-for="ImageFile" class="field-error" style="display:block; margin-top:8px;"></span>
+            <div class="image-grid" id="cImagePreview" style="margin-top: 12px;"></div>
+        </div>
     </div>
 
-</section>
+    <div class="form-actions" style="margin-top: 20px; display: flex; gap: 10px;">
+        <a asp-controller="Categories" asp-action="Manage" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" id="saveCategoryBtn"><i class="fa-solid fa-check"></i> Save Category</button>
+    </div>
+</form>
 
-
-@section Scripts
-{
-    <partial name="_ValidationScriptsPartial" />
+@section Scripts {
+    <script>
+        function previewCategoryImage(event) {
+            const preview = document.getElementById('cImagePreview');
+            preview.innerHTML = '';
+            const file = event.target.files[0];
+            if (file) {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.style.width = '90px';
+                img.style.height = '90px';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '8px';
+                img.style.border = '1px solid var(--border)';
+                preview.appendChild(img);
+            }
+        }
+    </script>
 }

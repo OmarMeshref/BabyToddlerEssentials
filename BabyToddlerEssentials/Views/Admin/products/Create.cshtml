@@ -1,0 +1,184 @@
+﻿@model BabyToddlerEssentials.ViewModels.ProductFormVM
+@{
+    ViewData["Title"] = "Add New Product";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-head">
+    <div>
+        <h1 id="formTitle">Add New Product</h1>
+        <p id="formSubtitle">Fill in the details below to add a new product to your catalog</p>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <a asp-controller="Product" asp-action="Manage" class="btn btn-secondary">Cancel</a>
+    </div>
+</div>
+
+<form asp-controller="Product" asp-action="Create" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+
+    <div class="form-card">
+        <h3 class="form-card__title">Basic Information</h3>
+        <p class="form-card__sub">Name, category and description shown to customers.</p>
+
+        <div class="form-grid">
+            <div class="form-field form-field--full">
+                <label asp-for="Name">Product Name <span class="required-mark">*</span></label>
+                <input asp-for="Name" class="text-input" placeholder="e.g. Organic Cotton Baby Bodysuit">
+                <span asp-validation-for="Name" class="field-error" style="display:block;"></span>
+            </div>
+            <div class="form-field">
+                <label asp-for="CategoryId">Category <span class="required-mark">*</span></label>
+                <select asp-for="CategoryId" class="select-control" asp-items="@(new SelectList(Model?.Categories ?? new List<BabyToddlerEssentials.Models.Category>(), "Id", "Name"))">
+                    <option value="">Select Category</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="field-error" style="display:block;"></span>
+            </div>
+            <div class="form-field">
+                <label asp-for="IsActive">Status</label>
+                <select asp-for="IsActive" class="select-control">
+                    <option value="true">Active</option>
+                    <option value="false">Inactive</option>
+                </select>
+            </div>
+            <div class="form-field form-field--full">
+                <label asp-for="Description">Description</label>
+                <textarea asp-for="Description" class="text-input" placeholder="Describe the product's material, sizing and care instructions..."></textarea>
+                <span asp-validation-for="Description" class="field-error" style="display:block;"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h3 class="form-card__title">Pricing</h3>
+        <p class="form-card__sub">Set the current selling price and an optional original price to show a discount.</p>
+        <div class="form-grid">
+            <div class="form-field">
+                <label asp-for="Price">Price (USD) <span class="required-mark">*</span></label>
+                <input asp-for="Price" type="number" step="0.01" class="text-input" placeholder="0.00">
+                <span asp-validation-for="Price" class="field-error" style="display:block;"></span>
+            </div>
+            <div class="form-field">
+                <label asp-for="DiscountPrice">Discount Price <span class="hint">(optional)</span></label>
+                <input asp-for="DiscountPrice" type="number" step="0.01" class="text-input" placeholder="0.00">
+                <span asp-validation-for="DiscountPrice" class="field-error" style="display:block;"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h3 class="form-card__title">Inventory & Brand</h3>
+        <p class="form-card__sub">Track how much stock is available for this product.</p>
+        <div class="form-grid">
+            <div class="form-field">
+                <label asp-for="StockQuantity">Stock Quantity <span class="required-mark">*</span></label>
+                <input asp-for="StockQuantity" type="number" class="text-input" placeholder="0">
+                <span asp-validation-for="StockQuantity" class="field-error" style="display:block;"></span>
+            </div>
+            <div class="form-field">
+                <label asp-for="Brand">Brand</label>
+                <input asp-for="Brand" class="text-input" placeholder="e.g. Carter's">
+                <span asp-validation-for="Brand" class="field-error" style="display:block;"></span>
+            </div>
+            <div class="form-field">
+                <label asp-for="AgeRange">Age Range</label>
+                <input asp-for="AgeRange" class="text-input" placeholder="e.g. 0-6 Months">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h3 class="form-card__title">Images</h3>
+        <p class="form-card__sub">Upload multiple JPG, PNG or WEBP files. You can select multiple times — the first image is always Primary.</p>
+
+        <div style="border: 2px dashed #f48fb1; border-radius: 12px; padding: 25px; text-align: center; background: #fff5f8; cursor: pointer;" onclick="document.getElementById('filePickerInput').click()">
+            <i class="fa-solid fa-cloud-arrow-up" style="font-size: 32px; color: #ec407a; margin-bottom: 8px;"></i>
+            <p style="margin: 0; font-weight: 600; color: #333;">Click to add photos (select one or multiple)</p>
+            <span style="font-size: 12px; color: #888;">Allowed: JPG, PNG, WEBP (Max 5MB each)</span>
+        </div>
+
+        <!-- Hidden input bound to ASP.NET Core Model -->
+        <input asp-for="NewImages" id="finalNewImagesInput" type="file" multiple style="display:none;">
+
+        <!-- Temporary input to pick files incrementally -->
+        <input id="filePickerInput" type="file" accept=".jpg,.jpeg,.png,.webp" multiple style="display:none;" onchange="appendFiles(event)">
+
+        <span asp-validation-for="NewImages" class="field-error" style="display:block; margin-top:8px;"></span>
+
+        <div id="imageGridPreview" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; margin-top: 18px;"></div>
+    </div>
+
+    <div class="form-actions" style="margin-top: 20px; display:flex; gap:10px;">
+        <a asp-controller="Product" asp-action="Manage" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary" id="saveProductBtn"><i class="fa-solid fa-check"></i> Save Product</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        const dt = new DataTransfer(); // Holds all chosen files cumulatively
+
+        function appendFiles(event) {
+            const newFiles = event.target.files;
+            if (!newFiles || newFiles.length === 0) return;
+
+            for (let i = 0; i < newFiles.length; i++) {
+                dt.items.add(newFiles[i]);
+            }
+
+            syncAndRender();
+            event.target.value = ''; // Reset picker for subsequent selections
+        }
+
+        function removeFile(index) {
+            dt.items.remove(index);
+            syncAndRender();
+        }
+
+        function syncAndRender() {
+            const finalInput = document.getElementById('finalNewImagesInput');
+            finalInput.files = dt.files; // Sync collected files to the form input
+
+            const container = document.getElementById('imageGridPreview');
+            container.innerHTML = '';
+
+            Array.from(dt.files).forEach((file, index) => {
+                const card = document.createElement('div');
+                card.style.position = 'relative';
+                card.style.borderRadius = '8px';
+                card.style.overflow = 'hidden';
+                card.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
+                card.style.border = '1px solid #eee';
+
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.style.width = '100%';
+                img.style.height = '100px';
+                img.style.objectFit = 'cover';
+                img.style.display = 'block';
+
+                // Delete button on image
+                const deleteBtn = document.createElement('button');
+                deleteBtn.type = 'button';
+                deleteBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                deleteBtn.style.cssText = 'position:absolute;top:4px;right:4px;background:rgba(220,53,69,0.85);color:#fff;border:none;border-radius:50%;width:22px;height:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;';
+                deleteBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    removeFile(index);
+                };
+
+                // Primary badge for the first image
+                if (index === 0) {
+                    const tag = document.createElement('span');
+                    tag.textContent = 'Primary';
+                    tag.style.cssText = 'position:absolute;top:4px;left:4px;background:#ec407a;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;font-weight:bold;';
+                    card.appendChild(tag);
+                }
+
+                card.appendChild(img);
+                card.appendChild(deleteBtn);
+                container.appendChild(card);
+            });
+        }
+    </script>
+}

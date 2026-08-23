@@ -1,0 +1,98 @@
+﻿@model BabyToddlerEssentials.ViewModels.Categories.CategoriesManageViewModel
+@{
+    ViewData["Title"] = "Categories";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-head">
+    <div>
+        <h1>Categories</h1>
+        <p>Organize your catalog into browsable departments</p>
+    </div>
+    <a asp-controller="Categories" asp-action="Create" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Category
+    </a>
+</div>
+
+<div class="panel">
+    <div class="toolbar">
+        <form method="get" asp-controller="Categories" asp-action="Manage" style="display: flex; gap: 10px; width: 100%;">
+            <div class="search-input" style="flex: 1;">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="search" value="@Model?.SearchTerm" placeholder="Search categories...">
+            </div>
+            <select name="isActive" class="select-control" onchange="this.form.submit()">
+                <option value="">All Status</option>
+                <option value="true" selected="@(Model?.IsActive == true)">Active</option>
+                <option value="false" selected="@(Model?.IsActive == false)">Inactive</option>
+            </select>
+            <button type="submit" class="btn btn-secondary">Filter</button>
+        </form>
+    </div>
+
+    <div class="table-scroll">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Category Name</th>
+                    <th>Description</th>
+                    <th>Products</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model?.Categories != null && Model.Categories.Any())
+                {
+                    @foreach (var cat in Model.Categories)
+                    {
+                        <tr>
+                            <td class="cell-title">
+                                <strong>@cat.Name</strong>
+                            </td>
+                            <td class="cell-muted" style="max-width: 260px;">
+                                @(string.IsNullOrEmpty(cat.Description) ? "—" : cat.Description)
+                            </td>
+                            <td>
+                                <span class="badge" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd; padding: 4px 8px; border-radius: 4px;">
+                                    @cat.ProductCount Products
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge" style="background: @(cat.IsActive ? "rgba(25, 135, 84, 0.1)" : "rgba(108, 117, 125, 0.1)"); color: @(cat.IsActive ? "#198754" : "#6c757d"); padding: 4px 8px; border-radius: 4px;">
+                                    @(cat.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td style="text-align: right;">
+                                <a asp-controller="Categories" asp-action="Edit" asp-route-id="@cat.Id" class="btn btn-secondary btn-sm" style="margin-right: 5px;">
+                                    <i class="fa-solid fa-pen"></i> Edit
+                                </a>
+                                @if (cat.IsActive)
+                                {
+                                    <form asp-controller="Categories" asp-action="Delete" asp-route-id="@cat.Id" method="post" style="display:inline;" onsubmit="return confirm('Are you sure you want to deactivate this category?');">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="fa-solid fa-ban"></i> Deactivate
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 30px;">
+                            <div class="empty-state">
+                                <div class="empty-state__icon"><i class="fa-solid fa-layer-group"></i></div>
+                                <h3>No categories found</h3>
+                                <p>Try adjusting your search or add a new category.</p>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

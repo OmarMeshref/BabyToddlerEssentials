@@ -1,4 +1,23 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var currentCtrl = ViewContext.RouteData.Values["Controller"]?.ToString()?.ToLower() ?? "admin";
+    var currentAct = ViewContext.RouteData.Values["Action"]?.ToString()?.ToLower() ?? "index";
+
+ 
+    string activePage = "dashboard";
+    if (currentCtrl == "product")
+    {
+        activePage = "products";
+    }
+    else if (currentCtrl == "categories")
+    {
+        activePage = "categories";
+    }
+    else if (currentCtrl == "admin")
+    {
+        activePage = currentAct == "index" ? "dashboard" : currentAct;
+    }
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -12,7 +31,7 @@
     <link rel="stylesheet" href="~/admin/css/components.css" asp-append-version="true">
     <link rel="stylesheet" href="~/admin/css/responsive.css" asp-append-version="true">
 </head>
-<body data-page="dashboard">
+<body data-page="@activePage">
     <div class="sidebar__backdrop" id="sidebarBackdrop"></div>
     <div class="app-shell">
         <aside class="sidebar" id="sidebar">
@@ -24,14 +43,30 @@
                 </div>
             </div>
             <nav class="sidebar__nav" aria-label="Main navigation">
-                <a asp-controller="Admin" asp-action="Index" class="nav-item" data-page="dashboard"><i class="fa-solid fa-grip"></i><span>Dashboard</span></a>
-                <a asp-controller="Product" asp-action="Index" class="nav-item" data-page="products"><i class="fa-solid fa-shirt"></i><span>Products</span></a>
-                <a asp-controller="Categories" asp-action="Index" class="nav-item" data-page="categories"><i class="fa-solid fa-layer-group"></i><span>Categories</span></a>
-                <a asp-controller="Admin" asp-action="Orders" class="nav-item" data-page="orders"><i class="fa-solid fa-bag-shopping"></i><span>Orders</span></a>
-                <a asp-controller="Admin" asp-action="Users" class="nav-item" data-page="users"><i class="fa-solid fa-users"></i><span>Users</span></a>
-                <a asp-controller="Admin" asp-action="Reviews" class="nav-item" data-page="reviews"><i class="fa-solid fa-star"></i><span>Reviews</span></a>
-                <a asp-controller="Admin" asp-action="Testimonials" class="nav-item" data-page="testimonials"><i class="fa-solid fa-quote-right"></i><span>Testimonials</span></a>
-                <a asp-controller="Home" asp-action="Index" class="nav-item"><i class="fa-solid fa-store"></i><span>Storefront</span></a>
+                <a asp-controller="Admin" asp-action="Index" class="nav-item @(activePage == "dashboard" ? "active" : "")" data-page="dashboard">
+                    <i class="fa-solid fa-grip"></i><span>Dashboard</span>
+                </a>
+                <a asp-controller="Product" asp-action="Manage" class="nav-item @(activePage == "products" ? "active" : "")" data-page="products">
+                    <i class="fa-solid fa-shirt"></i><span>Products</span>
+                </a>
+                <a asp-controller="Categories" asp-action="Manage" class="nav-item @(activePage == "categories" ? "active" : "")" data-page="categories">
+                    <i class="fa-solid fa-layer-group"></i><span>Categories</span>
+                </a>
+                <a asp-controller="Admin" asp-action="Orders" class="nav-item @(activePage == "orders" ? "active" : "")" data-page="orders">
+                    <i class="fa-solid fa-bag-shopping"></i><span>Orders</span>
+                </a>
+                <a asp-controller="Admin" asp-action="Users" class="nav-item @(activePage == "users" ? "active" : "")" data-page="users">
+                    <i class="fa-solid fa-users"></i><span>Users</span>
+                </a>
+                <a asp-controller="Admin" asp-action="Reviews" class="nav-item @(activePage == "reviews" ? "active" : "")" data-page="reviews">
+                    <i class="fa-solid fa-star"></i><span>Reviews</span>
+                </a>
+                <a asp-controller="Admin" asp-action="Testimonials" class="nav-item @(activePage == "testimonials" ? "active" : "")" data-page="testimonials">
+                    <i class="fa-solid fa-quote-right"></i><span>Testimonials</span>
+                </a>
+                <a asp-controller="Home" asp-action="Index" class="nav-item">
+                    <i class="fa-solid fa-store"></i><span>Storefront</span>
+                </a>
             </nav>
             <div class="sidebar__footer">
                 <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post" id="logoutForm">
