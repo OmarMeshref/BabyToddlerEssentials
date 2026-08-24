@@ -490,3 +490,21 @@ wwwroot/uploads/*
 *.db-wal
 
 **/serviceDependencies.local.json
+
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+
+# User-specific files
+*.user
+*.suo
+
+# Product uploads
+BabyToddlerEssentials/wwwroot/images/products/
+
+# Category uploads
+BabyToddlerEssentials/wwwroot/uploads/categories/
+BabyToddlerEssentials/wwwroot/uploads/products/
