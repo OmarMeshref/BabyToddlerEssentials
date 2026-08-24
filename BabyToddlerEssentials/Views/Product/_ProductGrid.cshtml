@@ -68,7 +68,7 @@ else
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="productId" value="@p.Id" />
                             <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
-                            <button class="add-btn" type="submit" title="Add to cart" @(p.InStock ? "" : "disabled")>🛒</button>
+                            <button class="add-btn" type="submit" title="Add to cart" @(p.InStock ? "" : "disabled")>+</button>
                         </form>
                     </div>
                 </div>

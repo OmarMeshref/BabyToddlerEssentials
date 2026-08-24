@@ -16,6 +16,64 @@
         margin-left: 6px;
     }
 
+    /* --- Review card (self-contained, unique classes) --- */
+    .rv-card {
+        background: #fff;
+        border: 1px solid #f0e6ee;
+        border-radius: 18px;
+        padding: 22px 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 6px 18px -12px rgba(59,42,74,.25);
+        display: block;
+    }
+
+    .rv-top {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 14px;
+    }
+
+    .rv-avatar {
+        width: 46px;
+        height: 46px;
+        flex: 0 0 46px;
+        border-radius: 50%;
+        background: linear-gradient(135deg,#ffe0f0,#e0f0ff);
+        display: grid;
+        place-items: center;
+        font-size: 1.2rem;
+    }
+
+    .rv-meta {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .rv-name {
+        font-weight: 700;
+        font-size: 1.05rem;
+        margin: 0 0 6px;
+    }
+
+    .rv-stars {
+        color: #FFC93C;
+        letter-spacing: 3px;
+        font-size: 1.05rem;
+    }
+
+    .rv-date {
+        color: #9a8aa8;
+        font-size: .85rem;
+        margin-top: 4px;
+    }
+
+    .rv-text {
+        margin: 0;
+        color: #4a3a58;
+        line-height: 1.7;
+    }
+
 </style>
 
 <section class="section">
@@ -202,23 +260,23 @@
                     {
                         foreach (var r in Model.ApprovedReviews)
                         {
-                            <div class="review">
-                                <div class="review-top">
-                                    <span class="review-avatar">👤</span>
-                                    <div>
-                                        <strong>@(r.User?.FullName ?? "Customer")</strong>
-                                        <div class="review-stars">
+                            <div class="rv-card">
+                                <div class="rv-top">
+                                    <div class="rv-avatar">👤</div>
+                                    <div class="rv-meta">
+                                        <div class="rv-name">@(r.User?.FullName ?? "Customer")</div>
+                                        <div class="rv-stars">
                                             @for (int i = 1; i <= 5; i++)
                                             {
-                                                <span>@(i <= r.Rating ? "★" : "☆")</span>
+                                                @(i <= r.Rating ? "★" : "☆")
                                             }
                                         </div>
+                                        <div class="rv-date">@r.CreatedAt.ToString("MMM d, yyyy")</div>
                                     </div>
-                                    <span class="review-date">@r.CreatedAt.ToString("MMM d, yyyy")</span>
                                 </div>
                                 @if (!string.IsNullOrWhiteSpace(r.Comment))
                                 {
-                                    <p class="review-text">@r.Comment</p>
+                                    <p class="rv-text">@r.Comment</p>
                                 }
                             </div>
                         }
