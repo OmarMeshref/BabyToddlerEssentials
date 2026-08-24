@@ -29,14 +29,15 @@
     }
 
     .filters .field-grid .field {
-            width: 100%;
-            box-sizing: border-box; /* padding/border no longer push the box wider */
-            min-width: 0; /* lets the input shrink inside the grid cell */
-        }
+        width: 100%;
+        box-sizing: border-box; /* padding/border no longer push the box wider */
+        min-width: 0; /* lets the input shrink inside the grid cell */
+    }
 
     /* Space between the Apply filters and Clear all buttons */
     .filters .btn--block + .btn--block {
-        margin-top: 12px; }
+        margin-top: 12px;
+    }
 
     /* Make the whole card clickable (stretched link), keeping buttons clickable */
     .card {
@@ -66,18 +67,14 @@
         margin-left: 6px;
     }
 
+    /* Shift shop content up now that the header is removed */
+    .section {
+        padding-top: 24px;
+    }
 </style>
 
 
 <!-- ===== Page header ===== -->
-<section class="about-hero">
-    <div class="wrap">
-        <span class="eyebrow">🛍️ Shop</span>
-        <h1>Little things for little ones</h1>
-        <p>Browse our baby &amp; toddler essentials — filter by category, price, and more.</p>
-    </div>
-</section>
-
 <section class="section">
     <div class="wrap">
 
@@ -152,49 +149,52 @@
         </div>
     </div>
 </section>
-<script>
-    (function () {
-        const input   = document.querySelector('.search-box input[name="search"]');
-        const results = document.getElementById('shopResults');
-        if (!input || !results) return;
-
-        let timer = null;
-
-        function liveSearch() {
-            const params = new URLSearchParams();
-            if (input.value.trim()) params.set('search', input.value.trim());
-
-            // keep the current category / price / sort filters in sync
-            const cat  = document.querySelector('[name="categoryId"]');
-            const min  = document.querySelector('[name="minPrice"]');
-            const max  = document.querySelector('[name="maxPrice"]');
-            const sort = document.querySelector('[name="sort"]');
-            if (cat && cat.value)  params.set('categoryId', cat.value);
-            if (min && min.value)  params.set('minPrice', min.value);
-            if (max && max.value)  params.set('maxPrice', max.value);
-            if (sort && sort.value) params.set('sort', sort.value);
-
-            fetch('/Product/Index?' + params.toString(), {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(function (res) { return res.text(); })
-            .then(function (html) {
-                results.innerHTML = html;   // swap in the fresh grid partial
-            })
-            .catch(function () { /* ignore transient errors while typing */ });
-        }
-
-        // debounce: wait 300ms after the user stops typing before searching
-        input.addEventListener('input', function () {
-            clearTimeout(timer);
-            timer = setTimeout(liveSearch, 300);
-        });
-    })();
-</script>
 
 @section Scripts {
     <!-- Toast: show any TempData messages via the template's window.toast() -->
     <partial name="_ToastStyle" />
     <partial name="_ToastTrigger" />
     <partial name="_AjaxCartWishlist" />
+
+    <script>
+        (function () {
+            const results = document.getElementById('shopResults');
+            if (!results) return;
+
+            let timer = null;
+
+            function liveSearch() {
+                // read the live value fresh each time, from the visible search box
+                const box = document.querySelector('.search-box input[name="search"]');
+                const term = box ? box.value.trim() : '';
+
+                const params = new URLSearchParams();
+                if (term) params.set('search', term);
+
+                // scope filter selectors so they don't grab the hidden duplicate inputs
+                const cat  = document.querySelector('.filters [name="categoryId"]');
+                const min  = document.querySelector('.filters [name="minPrice"]');
+                const max  = document.querySelector('.filters [name="maxPrice"]');
+                const sort = document.querySelector('.shop-topbar [name="sort"]');
+                if (cat && cat.value)   params.set('categoryId', cat.value);
+                if (min && min.value)   params.set('minPrice', min.value);
+                if (max && max.value)   params.set('maxPrice', max.value);
+                if (sort && sort.value) params.set('sort', sort.value);
+
+                fetch('/Product/Index?' + params.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                    .then(function (res) { return res.text(); })
+                    .then(function (html) { results.innerHTML = html; })
+                    .catch(function () { /* ignore transient errors while typing */ });
+            }
+
+            // debounce: wait 300ms after the user stops typing
+            const box = document.querySelector('.search-box input[name="search"]');
+            if (box) {
+                box.addEventListener('input', function () {
+                    clearTimeout(timer);
+                    timer = setTimeout(liveSearch, 300);
+                });
+            }
+        })();
+    </script>
 }
