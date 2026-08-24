@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<BabyToddlerEssentials.Models.ApplicationUser>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<BabyToddlerEssentials.Models.ApplicationUser> UserManager
+
 @{
     ViewData["Title"] = "Users";
     Layout = "_AdminLayout";
@@ -15,7 +18,7 @@
     <div class="toolbar">
         <div class="search-input">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="userSearchInput" placeholder="Search by name or email..." onkeyup="filterUsers()">
+            <input type="text" id="userSearchInput" placeholder="Search by name or email..." oninput="filterUsers()">
         </div>
         <select class="select-control" id="userRoleFilter" onchange="filterUsers()">
             <option value="">All Roles</option>
@@ -30,6 +33,7 @@
                 <tr>
                     <th>User / ID</th>
                     <th>Email</th>
+                    <th>Role</th>
                     <th>Phone</th>
                     <th>Status</th>
                 </tr>
@@ -39,20 +43,28 @@
                 {
                     @foreach (var user in Model)
                     {
-                        <tr class="user-row">
+                        var roles = await UserManager.GetRolesAsync(user);
+                        var userRole = roles.FirstOrDefault() ?? "Customer";
+
+                        <tr class="user-row" data-role="@userRole">
                             <td>
-                                <div style="display: flex; align-items: center; gap: 10px;">
+                                <div class="cell-product">
                                     <span class="avatar">@(user.Email?.Substring(0, Math.Min(2, user.Email.Length)).ToUpper() ?? "U")</span>
                                     <div>
-                                        <div style="font-weight: 600;">@(user.UserName ?? "User")</div>
-                                        <small style="color: var(--muted); font-size: 11px;">@user.Id</small>
+                                        <div class="cell-title">@(user.UserName ?? "User")</div>
+                                        <small class="cell-muted">@user.Id</small>
                                     </div>
                                 </div>
                             </td>
-                            <td class="user-email">@user.Email</td>
-                            <td>@(string.IsNullOrEmpty(user.PhoneNumber) ? "—" : user.PhoneNumber)</td>
+                            <td class="cell-muted">@user.Email</td>
                             <td>
-                                <span class="badge" style="background: rgba(25, 135, 84, 0.1); color: #198754; padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 12px;">
+                                <span class="badge @(userRole.Equals("Admin", StringComparison.OrdinalIgnoreCase) ? "badge--warning" : "badge--neutral")">
+                                    @userRole
+                                </span>
+                            </td>
+                            <td class="cell-muted">@(string.IsNullOrEmpty(user.PhoneNumber) ? "—" : user.PhoneNumber)</td>
+                            <td>
+                                <span class="badge badge--success">
                                     Active
                                 </span>
                             </td>
@@ -62,7 +74,7 @@
                 else
                 {
                     <tr>
-                        <td colspan="4" style="text-align: center; padding: 30px;">
+                        <td colspan="5" class="text-center">
                             <div class="empty-state">
                                 <div class="empty-state__icon"><i class="fa-solid fa-users"></i></div>
                                 <h3>No users found</h3>
@@ -79,12 +91,18 @@
 @section Scripts {
     <script>
         function filterUsers() {
-            var search = document.getElementById('userSearchInput').value.toLowerCase();
-            var rows = document.querySelectorAll('#usersTable tbody tr.user-row');
+            const searchVal = document.getElementById('userSearchInput').value.toLowerCase().trim();
+            const selectedRole = document.getElementById('userRoleFilter').value.toLowerCase();
+            const rows = document.querySelectorAll('#usersTable tbody tr.user-row');
 
-            rows.forEach(function(row) {
-                var text = row.innerText.toLowerCase();
-                if (text.includes(search)) {
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                const rowRole = (row.getAttribute('data-role') || '').toLowerCase();
+
+                const matchesSearch = text.includes(searchVal);
+                const matchesRole = selectedRole === '' || rowRole === selectedRole;
+
+                if (matchesSearch && matchesRole) {
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';

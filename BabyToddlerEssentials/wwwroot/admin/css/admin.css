@@ -592,6 +592,52 @@ h1, h2, h3, .section-title, .sidebar__brand-name, .stat-card__value,
 .hidden-file-input {
     display: none !important;
 }
+.detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+    align-items: start;
+}
+
+.detail-grid__col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.page-head__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.sidebar__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 14px;
+    height: 85px;
+    overflow: hidden;
+    border-bottom: 3px dashed var(--border);
+}
+
+.sidebar__logo-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    text-decoration: none;
+    overflow: hidden;
+}
+
+.sidebar__logo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left;
+    transform: scale(1.3);
+    display: block;
+}
 @media (prefers-reduced-motion: reduce) {
   .page-head::before { animation: none; }
 }

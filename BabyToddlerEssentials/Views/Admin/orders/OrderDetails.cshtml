@@ -9,14 +9,19 @@
         <h1 id="orderTitle">Order #@Model.Id</h1>
         <p id="orderSubtitle">Placed on @Model.OrderDate.ToString("MMM dd, yyyy - hh:mm tt")</p>
     </div>
-    <div class="table-actions">
-        <a asp-controller="Admin" asp-action="Orders" class="btn btn-secondary">Back to Orders</a>
-        <button onclick="window.print()" class="btn btn-secondary"><i class="fa-solid fa-print"></i> Print Order</button>
+    <div class="page-head__actions">
+        <a asp-controller="Admin" asp-action="Orders" class="btn btn-secondary">
+            <i class="fa-solid fa-arrow-left"></i> Back to Orders
+        </a>
+        <button onclick="window.print()" class="btn btn-secondary">
+            <i class="fa-solid fa-print"></i> Print Order
+        </button>
     </div>
 </div>
 
 <div class="detail-grid">
-    <div>
+    <!-- العمود الأيسر -->
+    <div class="detail-grid__col">
         <div class="panel">
             <div class="panel__head">
                 <h2 class="section-title">Products</h2>
@@ -50,8 +55,8 @@
                                         </div>
                                     </td>
                                     <td>@item.Quantity</td>
-                                    <td>$@item.UnitPrice.ToString("0.00")</td>
-                                    <td><strong>$@((item.UnitPrice * item.Quantity).ToString("0.00"))</strong></td>
+                                    <td>@item.UnitPrice.ToString("0.00") JOD</td>
+                                    <td><strong>@((item.UnitPrice * item.Quantity).ToString("0.00")) JOD</strong></td>
                                 </tr>
                             }
                         }
@@ -76,7 +81,8 @@
         </div>
     </div>
 
-    <div>
+    <!-- العمود الأيمن -->
+    <div class="detail-grid__col">
         <div class="panel">
             <div class="panel__head"><h2 class="section-title">Order Status</h2></div>
             <form asp-controller="Admin" asp-action="UpdateOrderStatus" method="post">
@@ -112,7 +118,7 @@
         <div class="panel">
             <div class="panel__head"><h2 class="section-title">Order Summary</h2></div>
             <div class="info-list">
-                <div class="info-list__row"><span>Total Amount</span><strong>$@Model.TotalAmount.ToString("0.00")</strong></div>
+                <div class="info-list__row"><span>Total Amount</span><strong>@Model.TotalAmount.ToString("0.00") JOD</strong></div>
             </div>
         </div>
     </div>

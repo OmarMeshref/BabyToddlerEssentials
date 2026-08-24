@@ -71,7 +71,7 @@
                             <td class="cell-muted">@order.OrderDate.ToString("MMM dd, yyyy")</td>
                             <td>@(order.OrderItems?.Sum(i => i.Quantity) ?? 0) pcs</td>
                             <td>
-                                <strong>$@order.TotalAmount.ToString("0.00")</strong>
+                                <strong>@order.TotalAmount.ToString("0.00") JOD</strong>
                             </td>
                             <td>
                                 <span class="badge @(order.IsPaid ? "badge--success" : "badge--warning")">
