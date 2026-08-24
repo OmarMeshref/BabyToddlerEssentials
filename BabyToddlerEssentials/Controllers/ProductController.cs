@@ -124,6 +124,12 @@ namespace BabyToddlerEssentials.Controllers
                     .ToListAsync()
             };
 
+            // AJAX (live search) → return only the product grid partial
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_ProductGrid", vm);
+            }
+
             return View(vm);
         }
 

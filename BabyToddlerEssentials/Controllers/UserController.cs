@@ -134,14 +134,25 @@ namespace BabyToddlerEssentials.Controllers
         {
             var result = await _cartService.AddAsync(productId, quantity);
 
+            // AJAX call → return JSON instead of redirecting
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return Json(new
+                {
+                    success = result.Success,
+                    message = result.Message,
+                    capped = result.Capped,
+                    cartCount = _cartService.GetCount()
+                });
+            }
+
             if (!result.Success)
                 TempData["ErrorMessage"] = result.Message;
             else if (result.Capped)
-                TempData["InfoMessage"] = result.Message;      // e.g. "Only 3 in stock…"
+                TempData["InfoMessage"] = result.Message;
             else
-                TempData["SuccessMessage"] = result.Message;    // "Added to cart."
+                TempData["SuccessMessage"] = result.Message;
 
-            // Go back where the user came from (product page / listing), else the cart
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
@@ -217,18 +228,21 @@ namespace BabyToddlerEssentials.Controllers
             var product = await _context.Products
                 .FirstOrDefaultAsync(p => p.Id == productId && p.IsActive);
 
+            bool isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
+
             if (product == null)
             {
+                if (isAjax) return Json(new { success = false, message = "Product not found." });
                 TempData["ErrorMessage"] = "Product not found.";
                 return RedirectBackOrWishlist(returnUrl);
             }
 
-            // Already saved? Tell the user, don't create a duplicate.
             bool exists = await _context.WishlistItems
                 .AnyAsync(w => w.UserId == userId && w.ProductId == productId);
 
             if (exists)
             {
+                if (isAjax) return Json(new { success = true, info = true, message = "This product is already in your wishlist." });
                 TempData["InfoMessage"] = "This product is already in your wishlist.";
                 return RedirectBackOrWishlist(returnUrl);
             }
@@ -239,8 +253,9 @@ namespace BabyToddlerEssentials.Controllers
                 ProductId = productId,
                 CreatedAt = DateTime.UtcNow
             });
-
             await _context.SaveChangesAsync();
+
+            if (isAjax) return Json(new { success = true, message = "Added to your wishlist." });
 
             TempData["SuccessMessage"] = "Added to your wishlist.";
             return RedirectBackOrWishlist(returnUrl);

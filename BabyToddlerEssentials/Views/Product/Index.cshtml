@@ -1,4 +1,5 @@
 ﻿@model BabyToddlerEssentials.ViewModels.ProductListVM
+@using BabyToddlerEssentials.Helpers
 
 @{
     ViewData["Title"] = "Shop";
@@ -35,7 +36,36 @@
 
     /* Space between the Apply filters and Clear all buttons */
     .filters .btn--block + .btn--block {
-        margin-top: 12px;
+        margin-top: 12px; }
+
+    /* Make the whole card clickable (stretched link), keeping buttons clickable */
+    .card {
+        position: relative;
+    }
+
+    .card-title-link::after {
+        content: "";
+        position: absolute;
+        inset: 0; /* covers the entire card */
+        z-index: 1;
+    }
+    /* keep interactive elements above the stretched link */
+    .card .add-btn,
+    .card form,
+    .card .card-media {
+        position: relative;
+        z-index: 2;
+    }
+
+    /* Original (pre-discount) price: crossed out + smaller */
+    .was {
+        text-decoration: line-through;
+        font-size: 0.7em;
+        opacity: 0.65;
+        font-weight: 600;
+        margin-left: 6px;
+    }
+
 </style>
 
 
@@ -115,112 +145,56 @@
             </aside>
 
             <!-- ===== Product grid column ===== -->
-            <div class="shop-results">
-                @if (!Model.Products.Any())
-                {
-                    <div class="empty">
-                        <div class="big">🧸</div>
-                        <h3>No products found</h3>
-                        <p>Try adjusting your search or filters.</p>
-                    </div>
-                }
-                else
-                {
-                    <div class="product-grid">
-                        @foreach (var p in Model.Products)
-                        {
-                            <article class="card reveal">
-
-                                <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="card-media bg-a">
-                                    @if (!string.IsNullOrEmpty(p.PrimaryImagePath))
-                                    {
-                                        <img src="@p.PrimaryImagePath" alt="@p.Name" class="template-product-image" />
-                                    }
-                                    else
-                                    {
-                                        <span class="emoji">🧸</span>
-                                    }
-                                    @if (!p.InStock)
-                                    {
-                                        <span class="age-badge">Out of stock</span>
-                                    }
-                                </a>
-
-                                <div class="card-body">
-                                    <span class="card-cat">@p.CategoryName</span>
-
-                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id">
-                                        <h3 class="card-title">@p.Name</h3>
-                                    </a>
-
-                                    <div class="card-rating">
-                                        @if (p.ReviewCount > 0)
-                                        {
-                                            <span class="stars">★</span> 
-                                            @p.AverageRating.ToString("0.0")
-                                            <span class="review-date">(@p.ReviewCount)</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="review-date">No reviews yet</span>
-                                        }
-                                    </div>
-
-                                    <div class="card-foot">
-                                        <div class="price">
-                                            @if (p.DiscountPrice.HasValue)
-                                            {
-                                                <span>@p.DiscountPrice.Value.ToString("C")</span>
-                                                <span class="was">@p.Price.ToString("C")</span>
-                                            }
-                                            else
-                                            {
-                                                <span>@p.Price.ToString("C")</span>
-                                            }
-                                        </div>
-
-                                        <!-- Add to cart (works without login) -->
-                                        <form asp-controller="User" asp-action="AddToCart" method="post">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="productId" value="@p.Id" />
-                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
-                                            <button class="add-btn" type="submit" title="Add to cart"
-                                                @(p.InStock ? "" : "disabled")>
-                                                🛒
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
-
-                            </article>
-                        }
-                    </div>
-
-                    <!-- ===== Paging ===== -->
-                    @if (Model.TotalPages > 1)
-                    {
-                        <div class="chip-row" style="justify-content:center; margin-top:32px;">
-                            @for (int i = 1; i <= Model.TotalPages; i++)
-                            {
-                                <a class="chip @(i == Model.Page ? "on" : "")"
-                                   asp-controller="Product" asp-action="Index"
-                                   asp-route-search="@Model.Search"
-                                   asp-route-categoryId="@Model.CategoryId"
-                                   asp-route-minPrice="@Model.MinPrice"
-                                   asp-route-maxPrice="@Model.MaxPrice"
-                                   asp-route-sort="@Model.Sort"
-                                   asp-route-page="@i">@i</a>
-                            }
-                        </div>
-                    }
-                }
+            <div class="shop-results" id="shopResults">
+                <partial name="_ProductGrid" model="Model" />
             </div>
 
         </div>
     </div>
 </section>
+<script>
+    (function () {
+        const input   = document.querySelector('.search-box input[name="search"]');
+        const results = document.getElementById('shopResults');
+        if (!input || !results) return;
+
+        let timer = null;
+
+        function liveSearch() {
+            const params = new URLSearchParams();
+            if (input.value.trim()) params.set('search', input.value.trim());
+
+            // keep the current category / price / sort filters in sync
+            const cat  = document.querySelector('[name="categoryId"]');
+            const min  = document.querySelector('[name="minPrice"]');
+            const max  = document.querySelector('[name="maxPrice"]');
+            const sort = document.querySelector('[name="sort"]');
+            if (cat && cat.value)  params.set('categoryId', cat.value);
+            if (min && min.value)  params.set('minPrice', min.value);
+            if (max && max.value)  params.set('maxPrice', max.value);
+            if (sort && sort.value) params.set('sort', sort.value);
+
+            fetch('/Product/Index?' + params.toString(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(function (res) { return res.text(); })
+            .then(function (html) {
+                results.innerHTML = html;   // swap in the fresh grid partial
+            })
+            .catch(function () { /* ignore transient errors while typing */ });
+        }
+
+        // debounce: wait 300ms after the user stops typing before searching
+        input.addEventListener('input', function () {
+            clearTimeout(timer);
+            timer = setTimeout(liveSearch, 300);
+        });
+    })();
+</script>
 
 @section Scripts {
     <!-- Toast: show any TempData messages via the template's window.toast() -->
+    <partial name="_ToastStyle" />
     <partial name="_ToastTrigger" />
+    <partial name="_AjaxCartWishlist" />
 }

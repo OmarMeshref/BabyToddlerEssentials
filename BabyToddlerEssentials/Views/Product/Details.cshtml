@@ -1,10 +1,22 @@
 ﻿@model BabyToddlerEssentials.ViewModels.ProductDetailsVM
+@using BabyToddlerEssentials.Helpers
 
 @{
     ViewData["Title"] = Model.Product.Name;
     ViewData["Page"] = "product";
     var returnUrl = $"{Context.Request.Path}{Context.Request.QueryString}";
 }
+<style>
+    /* Original (pre-discount) price: crossed out + smaller */
+    .was {
+        text-decoration: line-through;
+        font-size: 0.7em;
+        opacity: 0.65;
+        font-weight: 600;
+        margin-left: 6px;
+    }
+
+</style>
 
 <section class="section">
     <div class="wrap">
@@ -52,12 +64,12 @@
                 <div class="pdp-price">
                     @if (Model.Product.DiscountPrice.HasValue)
                     {
-                        <span>@Model.Product.DiscountPrice.Value.ToString("C")</span>
-                        <span class="was">@Model.Product.Price.ToString("C")</span>
+                        <span>@Model.Product.DiscountPrice.Value.ToJod()</span>
+                        <span class="was">@Model.Product.Price.ToJod()</span>
                     }
                     else
                     {
-                        <span>@Model.Product.Price.ToString("C")</span>
+                        <span>@Model.Product.Price.ToJod()</span>
                     }
                 </div>
 
@@ -101,7 +113,7 @@
 
                 <!-- actions -->
                 <div class="pdp-actions">
-                    <form asp-controller="User" asp-action="AddToCart" method="post">
+                    <form asp-controller="User" asp-action="AddToCart" method="post" data-ajax="cart-wishlist">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="productId" value="@Model.Product.Id" />
                         <input type="hidden" name="returnUrl" value="@returnUrl" />
@@ -110,7 +122,7 @@
                         </button>
                     </form>
 
-                    <form asp-controller="User" asp-action="AddToWishlist" method="post">
+                    <form asp-controller="User" asp-action="AddToWishlist" method="post" data-ajax="cart-wishlist">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="productId" value="@Model.Product.Id" />
                         <input type="hidden" name="returnUrl" value="@returnUrl" />
@@ -226,7 +238,9 @@
 </section>
 
 @section Scripts {
+    <partial name="_ToastStyle" />
     <partial name="_ToastTrigger" />
+    <partial name="_AjaxCartWishlist" />
     <script>
         // ---- Gallery: click a thumbnail to swap the main image ----
         (function() {

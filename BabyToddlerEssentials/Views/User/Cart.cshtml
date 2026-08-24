@@ -1,4 +1,5 @@
 ﻿@model BabyToddlerEssentials.Services.CartView
+@using BabyToddlerEssentials.Helpers
 
 @{
     ViewData["Title"] = "Your Cart";
@@ -47,7 +48,7 @@
                                 <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId">
                                     <h4 class="card-title">@item.Name</h4>
                                 </a>
-                                <div class="meta">@item.UnitPrice.ToString("C") each</div>
+                                <div class="meta">@item.UnitPrice.ToJod() each</div>
 
                                 <div class="row2">
                                     <!-- quantity update -->
@@ -71,7 +72,7 @@
                                 </div>
                             </div>
 
-                            <div class="line-price">@item.Subtotal.ToString("C")</div>
+                            <div class="line-price">@item.Subtotal.ToJod()</div>
                         </div>
                     }
 
@@ -87,7 +88,7 @@
 
                     <div class="sum-row">
                         <span>Items (@Model.ItemCount)</span>
-                        <span>@Model.Total.ToString("C")</span>
+                        <span>@Model.Total.ToJod()</span>
                     </div>
                     <div class="sum-row">
                         <span>Shipping</span>
@@ -95,7 +96,7 @@
                     </div>
                     <div class="sum-row total">
                         <span>Total</span>
-                        <span>@Model.Total.ToString("C")</span>
+                        <span>@Model.Total.ToJod()</span>
                     </div>
 
                     <a asp-controller="User" asp-action="Checkout" class="btn btn--block" style="margin-top:16px;">
