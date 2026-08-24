@@ -78,17 +78,9 @@
 
         <nav class="nav">
 
-            <a asp-controller="Home"
-               asp-action="Index"
-               class="brand">
-
-                <span class="bean">
-                    🍬
-                </span>
-
-                Jellybean
-
-            </a>
+<a asp-controller="Home" asp-action="Index" class="brand brand--logo">
+    <img src="~/images/logoBgRemoved.png" alt="Baby Basket" class="site-logo-img" asp-append-version="true" />
+</a>
 
 
             <ul class="nav-links">
@@ -363,20 +355,11 @@
 
             <div>
 
-                <a asp-controller="Home"
-                   asp-action="Index"
-                   class="brand">
-
-                    <span class="bean">
-                        🍬
-                    </span>
-
-                    Jellybean
-
-                </a>
-
+<a asp-controller="Home" asp-action="Index" class="brand brand--logo">
+    <img src="~/images/logoFooterWhite.png" alt="Baby Basket" class="site-logo-img" asp-append-version="true" />
+</a>
                 <p>
-                    Little things for little ones —
+                    Little things for little ones,
                     baby and toddler essentials in one place.
                 </p>
 
@@ -483,12 +466,9 @@
         </div>
 
 
-        <div class="foot-bottom wrap">
-
-            © @DateTime.Now.Year Jellybean ·
-            Baby & Toddler Essentials
-
-        </div>
+<div class="foot-bottom wrap">
+    © @DateTime.Now.Year Baby Basket · Baby & Toddler Essentials
+</div>
 
     </footer>
 

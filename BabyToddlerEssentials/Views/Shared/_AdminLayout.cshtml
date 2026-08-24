@@ -36,11 +36,9 @@
     <div class="app-shell">
         <aside class="sidebar" id="sidebar">
             <div class="sidebar__header">
-                <div class="sidebar__mark">LN</div>
-                <div>
-                    <div class="sidebar__brand-name">LittleNest</div>
-                    <div class="sidebar__brand-sub">Admin Panel</div>
-                </div>
+                <a asp-controller="Admin" asp-action="Index" class="sidebar__logo-link">
+                    <img src="~/images/logo.png" alt="Baby Basket Logo" class="sidebar__logo-img" asp-append-version="true" />
+                </a>
             </div>
             <nav class="sidebar__nav" aria-label="Main navigation">
                 <a asp-controller="Admin" asp-action="Index" class="nav-item @(activePage == "dashboard" ? "active" : "")" data-page="dashboard">

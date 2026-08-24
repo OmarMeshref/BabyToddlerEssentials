@@ -16,17 +16,21 @@
 
 <div class="panel">
     <div class="toolbar">
-        <form method="get" asp-controller="Categories" asp-action="Manage" style="display: flex; gap: 10px; width: 100%;">
+        <form method="get" asp-controller="Categories" asp-action="Manage" id="categoriesFilterForm" style="display: flex; gap: 10px; width: 100%;">
             <div class="search-input" style="flex: 1;">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" name="search" value="@Model?.SearchTerm" placeholder="Search categories...">
+                <input type="text"
+                       id="categorySearchInput"
+                       name="search"
+                       value="@Model?.SearchTerm"
+                       placeholder="Search categories..."
+                       autocomplete="off">
             </div>
-            <select name="isActive" class="select-control" onchange="this.form.submit()">
+            <select name="isActive" class="select-control" onchange="document.getElementById('categoriesFilterForm').submit()">
                 <option value="">All Status</option>
                 <option value="true" selected="@(Model?.IsActive == true)">Active</option>
                 <option value="false" selected="@(Model?.IsActive == false)">Inactive</option>
             </select>
-            <button type="submit" class="btn btn-secondary">Filter</button>
         </form>
     </div>
 
@@ -96,3 +100,27 @@
         </table>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        let searchTimeout;
+        const searchInput = document.getElementById('categorySearchInput');
+        const filterForm = document.getElementById('categoriesFilterForm');
+
+        if (searchInput && filterForm) {
+            // إبقاء المؤشر في نهاية النص بعد إعادة تحميل الصفحة
+            if (searchInput.value) {
+                const valLength = searchInput.value.length;
+                searchInput.setSelectionRange(valLength, valLength);
+                searchInput.focus();
+            }
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    filterForm.submit();
+                }, 400); 
+            });
+        }
+    </script>
+}

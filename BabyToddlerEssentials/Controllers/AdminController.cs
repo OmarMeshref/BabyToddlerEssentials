@@ -57,6 +57,7 @@ namespace BabyToddlerEssentials.Controllers
                 .Include(o => o.User)
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.Product)
+                        .ThenInclude(p => p.ProductImages)
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
@@ -66,7 +67,6 @@ namespace BabyToddlerEssentials.Controllers
 
             return View("/Views/Admin/Orders/OrderDetails.cshtml", order);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateOrderStatus(int id, OrderStatus newStatus)
@@ -153,7 +153,7 @@ namespace BabyToddlerEssentials.Controllers
             var testimonialsQuery = _context.Testimonials
                 .Include(t => t.User)
                 .AsQueryable();
-
+            
             if (status.HasValue)
             {
                 testimonialsQuery = testimonialsQuery.Where(t => t.Status == status.Value);
