@@ -247,7 +247,10 @@
 
                                     @if (User.Identity?.IsAuthenticated == true)
                                     {
-                                        <form asp-controller="User" asp-action="ToggleWishlist" method="post" class="wish-form" data-ajax="cart-wishlist">
+                                        <form asp-controller="User"
+                                              asp-action="ToggleWishlist"
+                                              method="post"
+                                              class="wish-form">
                                             <input type="hidden" name="productId" value="@product.Id" />
                                             <button type="submit"
                                                     class="wish-btn @(product.IsInWishlist ? "on" : "")"
@@ -267,7 +270,10 @@
 
                                     @if (product.StockQuantity > 0)
                                     {
-                                        <form asp-controller="User" asp-action="AddToCart" method="post" class="cart-form" data-ajax="cart-wishlist">
+                                        <form asp-controller="User"
+                                              asp-action="AddToCart"
+                                              method="post"
+                                              class="cart-form">
                                             <input type="hidden" name="productId" value="@product.Id" />
                                             <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
                                             <button type="submit" class="add-btn" title="Add to cart">+</button>
