@@ -1,4 +1,5 @@
 ﻿@model List<BabyToddlerEssentials.Models.WishlistItem>
+@using BabyToddlerEssentials.Helpers
 
 @{
     ViewData["Title"] = "Your Wishlist";
@@ -60,18 +61,18 @@
                             <div class="price">
                                 @if (p.DiscountPrice.HasValue)
                                 {
-                                    <span>@p.DiscountPrice.Value.ToString("C")</span>
-                                    <span class="was">@p.Price.ToString("C")</span>
+                                    <span>@p.DiscountPrice.Value.ToJod()</span>
+                                    <span class="was">@p.Price.ToJod()</span>
                                 }
                                 else
                                 {
-                                    <span>@p.Price.ToString("C")</span>
+                                    <span>@p.Price.ToJod()</span>
                                 }
                             </div>
 
                             <!-- actions -->
                             <div class="pdp-actions" style="margin-top:10px;">
-                                <form asp-controller="User" asp-action="AddToCart" method="post">
+                                <form asp-controller="User" asp-action="AddToCart" method="post" data-ajax="cart-wishlist">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="productId" value="@p.Id" />
                                     <input type="hidden" name="returnUrl" value="@returnUrl" />
@@ -95,5 +96,7 @@
 </section>
 
 @section Scripts {
+    <partial name="_ToastStyle" />
     <partial name="_ToastTrigger" />
+    <partial name="_AjaxCartWishlist" />
 }

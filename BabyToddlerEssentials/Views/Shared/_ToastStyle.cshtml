@@ -1,0 +1,23 @@
+﻿@* Always-present fix for the toast (Bootstrap .toast collision made it 0×0/invisible). *@
+<style>
+    .toast-wrap {
+        align-items: center;
+        max-width: 90vw;
+        bottom: 32px;
+        gap: 12px;
+    }
+
+        .toast-wrap .toast {
+            display: flex !important;
+            width: max-content;
+            max-width: 90vw;
+            white-space: nowrap;
+            flex: 0 0 auto;
+            opacity: 1 !important;
+            visibility: visible !important;
+            padding: 18px 30px !important;
+            font-size: 1.1rem !important;
+            border-radius: 999px !important;
+            gap: 12px;
+        }
+</style>

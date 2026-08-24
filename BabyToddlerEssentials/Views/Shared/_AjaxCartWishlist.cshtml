@@ -1,0 +1,46 @@
+﻿@* Intercepts Add-to-cart / Add-to-wishlist submits via event delegation (robust to timing). *@
+
+<script>
+    (function () {
+        if (window.__ajaxCartWired) return;   // guard: attach only once
+        window.__ajaxCartWired = true;
+
+        document.addEventListener("submit", function (e) {
+            const form = e.target.closest('form[data-ajax="cart-wishlist"]');
+            if (!form) return;
+
+            e.preventDefault();
+
+            const btn = form.querySelector('button[type="submit"], button:not([type])');
+            if (btn && btn.disabled) return;
+            if (btn) btn.disabled = true;
+
+            fetch(form.action, {
+                method: "POST",
+                headers: { "X-Requested-With": "XMLHttpRequest" },
+                body: new FormData(form)
+            })
+            .then(function (res) {
+                if (res.status === 401 || res.redirected) {
+                    window.location.href = res.url || "/Identity/Account/Login";
+                    return null;
+                }
+                return res.json();
+            })
+            .then(function (data) {
+                if (!data) return;
+                if (typeof window.toast === "function") {
+                    if (data.success && (data.info || data.capped)) window.toast(data.message);
+                    else if (data.success) window.toast(data.message, "Success");
+                    else window.toast(data.message, "Error");
+                }
+            })
+            .catch(function () {
+                if (typeof window.toast === "function") window.toast("Something went wrong.", "Error");
+            })
+            .finally(function () {
+                if (btn) btn.disabled = false;
+            });
+        });
+    })();
+</script>

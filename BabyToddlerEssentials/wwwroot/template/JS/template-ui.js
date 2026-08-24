@@ -70,6 +70,7 @@ function initMobileDrawer() {
     const open = () => {
 
         drawer.classList.add("open");
+        openButton?.classList.add("open");
 
     };
 
@@ -77,6 +78,7 @@ function initMobileDrawer() {
     const close = () => {
 
         drawer.classList.remove("open");
+        openButton?.classList.remove("open");
 
     };
 

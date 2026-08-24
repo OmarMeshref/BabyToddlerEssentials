@@ -1,4 +1,5 @@
 ﻿@model BabyToddlerEssentials.ViewModels.OrderDetailsVM
+@using BabyToddlerEssentials.Helpers
 
 @{
     ViewData["Title"] = $"Invoice #{Model.Order.Id}";
@@ -65,9 +66,9 @@
                     {
                         <tr>
                             <td>@(item.Product?.Name ?? "Product")</td>
-                            <td class="num">@item.UnitPrice.ToString("C")</td>
+                            <td class="num">@item.UnitPrice.ToJod()</td>
                             <td class="num">@item.Quantity</td>
-                            <td class="num">@((item.UnitPrice * item.Quantity).ToString("C"))</td>
+                            <td class="num">@((item.UnitPrice * item.Quantity).ToJod())</td>
                         </tr>
                     }
                 </tbody>
@@ -75,9 +76,9 @@
 
             <!-- totals -->
             <div class="inv-totals">
-                <div class="inv-kv"><span>Subtotal</span><span>@order.TotalAmount.ToString("C")</span></div>
+                <div class="inv-kv"><span>Subtotal</span><span>@order.TotalAmount.ToJod()</span></div>
                 <div class="inv-kv"><span>Shipping</span><span>Free</span></div>
-                <div class="inv-kv inv-grand"><span>Total</span><span>@order.TotalAmount.ToString("C")</span></div>
+                <div class="inv-kv inv-grand"><span>Total</span><span>@order.TotalAmount.ToJod()</span></div>
             </div>
 
             <!-- footer -->
