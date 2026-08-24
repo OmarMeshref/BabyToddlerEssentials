@@ -16,6 +16,8 @@
 
         public string Name { get; set; } = string.Empty;
 
+        public string? ImagePath { get; set; }
+
         public string? Description { get; set; }
 
         public int ProductCount { get; set; }
@@ -34,6 +36,8 @@
         public string CategoryName { get; set; } = string.Empty;
 
         public string? ImagePath { get; set; }
+
+        public bool IsInWishlist { get; set; }
     }
 
     public class HomeTestimonialViewModel

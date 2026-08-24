@@ -121,12 +121,22 @@
 
                 @foreach (var category in Model.Categories)
                 {
-                    <!-- Activate link when CategoryController is ready -->
+                    <a asp-controller="Categories"
+                       asp-action="Details"
+                       asp-route-id="@category.Id"
+                       class="cat-tile">
 
-                    <a asp-controller="Categories" asp-action="Details" asp-route-id="@category.Id" class="cat-tile">
-
-                        <div class="emoji">
-                            🧸
+                        <div class="cat-media">
+                            @if (!string.IsNullOrWhiteSpace(category.ImagePath))
+                            {
+                                <img src="@category.ImagePath"
+                                     alt="@category.Name"
+                                     class="template-category-image" />
+                            }
+                            else
+                            {
+                                <span class="emoji">🧸</span>
+                            }
                         </div>
 
                         <div class="name">
@@ -195,75 +205,80 @@
         @if (Model.Products.Any())
         {
             <div class="product-grid reveal">
-
                 @foreach (var product in Model.Products)
                 {
-                    <article class="card">
-
+                    <article class="card"
+                             onclick="window.location.href='@Url.Action("Details", "Product", new { id = product.Id })'"
+                             style="cursor:pointer">
 
                         <div class="card-media bg-a">
-
                             @if (!string.IsNullOrWhiteSpace(product.ImagePath))
                             {
-                                <img src="@product.ImagePath"
-                                     alt="@product.Name"
-                                     class="template-product-image" />
+                                <img src="@product.ImagePath" alt="@product.Name" class="template-product-image" />
                             }
                             else
                             {
-                                <span class="emoji">
-                                    🧸
-                                </span>
+                                <span class="emoji">🧸</span>
                             }
-
                         </div>
-
 
                         <div class="card-body">
 
+                            <span class="card-cat">@product.CategoryName</span>
 
-                            <span class="card-cat">
-                                @product.CategoryName
-                            </span>
-
-
-                            <h3 class="card-title">
-                                @product.Name
-                            </h3>
-
+                            <h3 class="card-title">@product.Name</h3>
 
                             @if (product.StockQuantity <= 0)
                             {
-                                <div class="card-rating">
-                                    Out of stock
-                                </div>
+                                <div class="card-rating">Out of stock</div>
                             }
                             else if (product.StockQuantity <= 5)
                             {
-                                <div class="card-rating">
-                                    Only @product.StockQuantity left
-                                </div>
+                                <div class="card-rating">Only @product.StockQuantity left</div>
                             }
-
 
                             <div class="card-foot">
 
                                 <div class="price">
-
                                     @product.Price.ToString("0.00") JOD
-
                                 </div>
 
+                                <div class="card-actions" onclick="event.stopPropagation()">
 
-                                <!-- Becomes Add To Cart later -->
-                                <button class="add-btn"
-                                        type="button"
-                                        disabled
-                                        title="Cart coming soon">
+                                    @if (User.Identity?.IsAuthenticated == true)
+                                    {
+                                        <form asp-controller="User" asp-action="ToggleWishlist" method="post" class="wish-form" data-ajax="cart-wishlist">
+                                            <input type="hidden" name="productId" value="@product.Id" />
+                                            <button type="submit"
+                                                    class="wish-btn @(product.IsInWishlist ? "on" : "")"
+                                                    title="@(product.IsInWishlist ? "Remove from wishlist" : "Add to wishlist")">
+                                                <span>@(product.IsInWishlist ? "♥" : "♡")</span>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <a asp-page="/Account/Login" area="Identity"
+                                           asp-route-returnUrl="@Context.Request.Path"
+                                           class="wish-btn" title="Log in to save to wishlist">
+                                            <span>♡</span>
+                                        </a>
+                                    }
 
-                                    +
+                                    @if (product.StockQuantity > 0)
+                                    {
+                                        <form asp-controller="User" asp-action="AddToCart" method="post" class="cart-form" data-ajax="cart-wishlist">
+                                            <input type="hidden" name="productId" value="@product.Id" />
+                                            <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                            <button type="submit" class="add-btn" title="Add to cart">+</button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <button class="add-btn" type="button" disabled title="Out of stock">+</button>
+                                    }
 
-                                </button>
+                                </div>
 
                             </div>
 
@@ -271,7 +286,6 @@
 
                     </article>
                 }
-
             </div>
 
 
@@ -513,3 +527,9 @@
     </div>
 
 </section>
+
+@section Scripts {
+    <partial name="_ToastStyle" />
+    <partial name="_ToastTrigger" />
+    <partial name="_AjaxCartWishlist" />
+}

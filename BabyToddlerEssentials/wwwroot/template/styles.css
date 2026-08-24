@@ -643,9 +643,24 @@ img {
         transform: scale(1.15);
     }
 
-    .wish-btn.on {
-        background: var(--pink);
-    }
+.wish-btn {
+    color: var(--ink-soft);
+    background: rgba(255,255,255,.9);
+    transition: transform .15s, color .15s;
+}
+
+.wish-btn:hover {
+    transform: scale(1.15);
+}
+
+.wish-btn.on {
+    color: var(--pink-deep);
+    background: rgba(255,255,255,.9); /* خلفية ثابتة بيضاء، بس اللون بس بيتغير */
+}
+
+.wish-btn.on span {
+    animation: pop-in .25s cubic-bezier(.34,1.56,.64,1);
+}
 
 .card-body {
     padding: 14px 16px 18px;
@@ -2856,5 +2871,203 @@ input[type="range"] {
         width: 38px;
         height: 38px;
         font-size: 1.1rem;
+    }
+}
+
+/* =========================================
+   AUTH SHELL (2-column template: Login / Register)
+   ========================================= */
+
+.auth-shell {
+    min-height: calc(100vh - 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 20px;
+}
+
+    .auth-shell .auth-card {
+        width: 100%;
+        max-width: 920px;
+        padding: 0;
+        display: grid;
+        grid-template-columns: 1fr 1.15fr;
+        overflow: hidden;
+        box-shadow: var(--shadow-lift);
+    }
+
+        /* Single-column variant: ForgotPassword / Confirmation */
+        .auth-shell .auth-card.auth-card--single {
+            grid-template-columns: 1fr;
+            max-width: 460px;
+        }
+
+/* ---------- Left panel (aside) ---------- */
+.auth-aside {
+    position: relative;
+    background: linear-gradient(150deg, var(--pink), var(--sky));
+    color: #fff;
+    padding: 40px 34px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+    .auth-aside h2 {
+        color: #fff;
+        font-size: 1.9rem;
+        margin-bottom: .3em;
+    }
+
+    .auth-aside p {
+        color: rgba(255,255,255,.9);
+        font-size: .98rem;
+        margin: 0 0 20px;
+    }
+
+    .auth-aside ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 12px;
+    }
+
+    .auth-aside li {
+        font-weight: 700;
+        font-size: .95rem;
+    }
+
+    .auth-aside .eyebrow {
+        color: #fff;
+    }
+
+    .auth-aside .spark {
+        position: absolute;
+        font-size: 2.4rem;
+        opacity: .9;
+        animation: floaty 3.5s ease-in-out infinite;
+    }
+
+        .auth-aside .spark.a1 {
+            top: 10%;
+            right: 10%;
+        }
+
+        .auth-aside .spark.a2 {
+            bottom: 12%;
+            left: 8%;
+            animation-delay: .8s;
+            font-size: 1.9rem;
+        }
+
+/* ---------- Right panel (form) ---------- */
+.auth-main {
+    padding: 44px 40px;
+}
+
+    .auth-main h1 {
+        font-size: 1.8rem;
+        margin-bottom: .25em;
+    }
+
+.auth-sub {
+    color: var(--ink-soft);
+    margin: 0 0 22px;
+}
+
+.auth-main form {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.auth-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    font-size: .9rem;
+    margin: 4px 0 18px;
+}
+
+    .auth-row a {
+        font-weight: 700;
+        color: var(--sky-deep);
+    }
+
+        .auth-row a:hover {
+            color: var(--pink-deep);
+        }
+
+.auth-remember {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--ink-soft);
+}
+
+    .auth-remember input {
+        width: auto;
+        accent-color: var(--pink);
+    }
+
+.auth-alt {
+    text-align: center;
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 2px solid var(--line);
+    font-size: .92rem;
+    color: var(--ink-soft);
+}
+
+    .auth-alt a {
+        font-weight: 800;
+        color: var(--pink-deep);
+    }
+
+        .auth-alt a:hover {
+            color: var(--sky-deep);
+        }
+
+.auth-validation {
+    font-size: .85rem;
+    font-weight: 700;
+    color: var(--pink-deep);
+    background: #FFEAF2;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    margin-bottom: 14px;
+}
+
+.auth-main .field .err {
+    /* asp-validation-for already renders only when there's an error,
+       so force-show instead of relying on the .invalid parent class */
+    display: block;
+}
+
+/* Mobile */
+@media (max-width: 860px) {
+    .auth-shell .auth-card {
+        grid-template-columns: 1fr;
+        max-width: 460px;
+    }
+
+    .auth-aside {
+        padding: 30px 28px;
+    }
+}
+
+@media (max-width: 576px) {
+    .auth-shell {
+        padding: 30px 14px;
+    }
+
+    .auth-main {
+        padding: 32px 24px;
     }
 }

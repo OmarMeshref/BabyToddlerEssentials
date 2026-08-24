@@ -3,132 +3,157 @@
 
 @{
     ViewData["Title"] = "Create account";
+    Layout = "_AuthLayout";
 }
 
-<div class="auth-page">
+<div class="auth-shell">
 
     <div class="auth-card">
 
-        <div class="auth-brand">
-            <span class="bean">🍬</span>
-            <span>Jellybean</span>
-        </div>
+        <aside class="auth-aside">
 
-        <div class="auth-header">
+            <span class="spark a1">🎈</span>
+            <span class="spark a2">🌈</span>
 
-            <span class="eyebrow">
-                Join Jellybean
+            <span class="eyebrow" style="color:#fff">
+                Join the club
             </span>
 
-            <h1>
-                Create your account
-            </h1>
+            <h2>
+                Get 10% off your first treat
+            </h2>
 
             <p>
-                Create an account to manage your orders and wishlist.
+                Create an account and unlock a warmer,
+                faster shopping experience.
             </p>
 
-        </div>
+            <ul>
+                <li>🎁 Members-only deals</li>
+                <li>⚡ One-tap checkout</li>
+                <li>📦 Order history &amp; invoices</li>
+            </ul>
 
-        <form id="registerForm"
-              asp-route-returnUrl="@Model.ReturnUrl"
-              method="post"
-              class="auth-form">
+        </aside>
+
+        <div class="auth-main">
+
+            <h1>
+                Create account
+            </h1>
+
+            <p class="auth-sub">
+                It takes less than a minute.
+            </p>
 
             <div asp-validation-summary="ModelOnly"
                  class="auth-validation"
                  role="alert">
             </div>
 
-            <div class="auth-field">
+            <form id="registerForm"
+                  asp-route-returnUrl="@Model.ReturnUrl"
+                  method="post"
+                  onsubmit="return jbCombineName()">
 
-                <label asp-for="Input.FullName">
-                    Full name
-                </label>
+                <!-- Not bound to the model — combined into Input.FullName on submit -->
+                <div class="field-grid">
 
-                <input asp-for="Input.FullName"
-                       autocomplete="name"
-                       placeholder="Your full name" />
+                    <div class="field">
+                        <label for="rg-fn">First name</label>
+                        <input id="rg-fn" placeholder="Alex" autocomplete="given-name" />
+                        <span class="err" id="rg-fn-err">Required</span>
+                    </div>
 
-                <span asp-validation-for="Input.FullName"
-                      class="auth-error">
-                </span>
+                    <div class="field">
+                        <label for="rg-ln">Last name</label>
+                        <input id="rg-ln" placeholder="Rivera" autocomplete="family-name" />
+                        <span class="err" id="rg-ln-err">Required</span>
+                    </div>
 
-            </div>
+                </div>
 
-            <div class="auth-field">
+                <!-- Actual model field, hidden — filled by JS before submit -->
+                <input type="hidden" asp-for="Input.FullName" id="rg-fullname" />
+                <span asp-validation-for="Input.FullName" class="err"></span>
 
-                <label asp-for="Input.Email">
-                    Email
-                </label>
+                <div class="field">
 
-                <input asp-for="Input.Email"
-                       autocomplete="username"
-                       aria-required="true"
-                       placeholder="name@example.com" />
+                    <label asp-for="Input.Email">
+                        Email
+                    </label>
 
-                <span asp-validation-for="Input.Email"
-                      class="auth-error">
-                </span>
+                    <input asp-for="Input.Email"
+                           autocomplete="username"
+                           aria-required="true"
+                           placeholder="you@email.com" />
 
-            </div>
+                    <span asp-validation-for="Input.Email"
+                          class="err">
+                    </span>
 
-            <div class="auth-field">
+                </div>
 
-                <label asp-for="Input.Password">
-                    Password
-                </label>
+                <div class="field-grid">
 
-                <input asp-for="Input.Password"
-                       autocomplete="new-password"
-                       aria-required="true"
-                       placeholder="Create a password" />
+                    <div class="field">
 
-                <span asp-validation-for="Input.Password"
-                      class="auth-error">
-                </span>
+                        <label asp-for="Input.Password">
+                            Password
+                        </label>
 
-            </div>
+                        <input asp-for="Input.Password"
+                               autocomplete="new-password"
+                               aria-required="true"
+                               placeholder="At least 6 characters" />
 
-            <div class="auth-field">
+                        <span asp-validation-for="Input.Password"
+                              class="err">
+                        </span>
 
-                <label asp-for="Input.ConfirmPassword">
-                    Confirm password
-                </label>
+                    </div>
 
-                <input asp-for="Input.ConfirmPassword"
-                       autocomplete="new-password"
-                       aria-required="true"
-                       placeholder="Repeat your password" />
+                    <div class="field">
 
-                <span asp-validation-for="Input.ConfirmPassword"
-                      class="auth-error">
-                </span>
+                        <label asp-for="Input.ConfirmPassword">
+                            Confirm password
+                        </label>
 
-            </div>
+                        <input asp-for="Input.ConfirmPassword"
+                               autocomplete="new-password"
+                               aria-required="true"
+                               placeholder="Repeat password" />
 
-            <button id="registerSubmit"
-                    type="submit"
-                    class="auth-submit">
+                        <span asp-validation-for="Input.ConfirmPassword"
+                              class="err">
+                        </span>
 
-                Create account
+                    </div>
 
-            </button>
+                </div>
 
-        </form>
+                <button id="registerSubmit"
+                        type="submit"
+                        class="btn btn--block">
 
-        <div class="auth-footer">
+                    Create account ✨
 
-            <span>
+                </button>
+
+            </form>
+
+            <p class="auth-alt">
+
                 Already have an account?
-            </span>
 
-            <a asp-page="./Login"
-               asp-route-returnUrl="@Model.ReturnUrl">
+                <a asp-page="./Login"
+                   asp-route-returnUrl="@Model.ReturnUrl">
 
-                Log in
+                    Log in
 
-            </a>
+                </a>
+
+            </p>
 
         </div>
 
@@ -138,4 +163,19 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function jbCombineName() {
+            const fn = document.getElementById('rg-fn').value.trim();
+            const ln = document.getElementById('rg-ln').value.trim();
+
+            document.getElementById('rg-fn-err').style.display = fn ? 'none' : 'block';
+            document.getElementById('rg-ln-err').style.display = ln ? 'none' : 'block';
+
+            if (!fn || !ln) return false;
+
+            document.getElementById('rg-fullname').value = `${fn} ${ln}`;
+            return true;
+        }
+    </script>
 }

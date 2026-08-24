@@ -116,6 +116,54 @@ namespace BabyToddlerEssentials.Controllers
         }
 
         // =========================================================
+        // POST /User/ToggleWishlist — add if not saved, remove if saved
+        // Used by the heart button on product cards (AJAX)
+        // =========================================================
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleWishlist(int productId)
+        {
+            var userId = _userManager.GetUserId(User)!;
+
+            var existing = await _context.WishlistItems
+                .FirstOrDefaultAsync(w => w.UserId == userId && w.ProductId == productId);
+
+            bool nowInWishlist;
+
+            if (existing != null)
+            {
+                _context.WishlistItems.Remove(existing);
+                nowInWishlist = false;
+            }
+            else
+            {
+                var product = await _context.Products
+                    .FirstOrDefaultAsync(p => p.Id == productId && p.IsActive);
+
+                if (product == null)
+                    return Json(new { success = false, message = "Product not found." });
+
+                _context.WishlistItems.Add(new WishlistItem
+                {
+                    UserId = userId,
+                    ProductId = productId,
+                    CreatedAt = DateTime.UtcNow
+                });
+                nowInWishlist = true;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Json(new
+            {
+                success = true,
+                inWishlist = nowInWishlist,
+                message = nowInWishlist ? "Added to your wishlist." : "Removed from your wishlist."
+            });
+        }
+
+        // =========================================================
         // CART  (no login required — cart lives in session)
         // =========================================================
 
@@ -128,14 +176,17 @@ namespace BabyToddlerEssentials.Controllers
         }
 
         // POST /User/AddToCart — add a product (merges + caps at stock)
+        // Behavior for normal form posts is UNCHANGED (redirect + TempData).
+        // AJAX callers (fetch/XHR with X-Requested-With header) get JSON instead.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddToCart(int productId, int quantity = 1, string? returnUrl = null)
         {
             var result = await _cartService.AddAsync(productId, quantity);
+            bool isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest";
 
             // AJAX call → return JSON instead of redirecting
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            if (isAjax)
             {
                 return Json(new
                 {
@@ -153,6 +204,7 @@ namespace BabyToddlerEssentials.Controllers
             else
                 TempData["SuccessMessage"] = result.Message;
 
+            // Go back where the user came from (product page / listing), else the cart
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 

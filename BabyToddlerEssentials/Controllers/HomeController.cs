@@ -2,6 +2,7 @@ using BabyToddlerEssentials.Data;
 using BabyToddlerEssentials.Models;
 using BabyToddlerEssentials.Models.Enums;
 using BabyToddlerEssentials.ViewModels.Home;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -11,10 +12,12 @@ namespace BabyToddlerEssentials.Controllers
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(ApplicationDbContext context)
+        public HomeController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
@@ -28,35 +31,48 @@ namespace BabyToddlerEssentials.Controllers
                     Id = c.Id,
                     Name = c.Name,
                     Description = c.Description,
+                    ImagePath = c.ImagePath,
                     ProductCount = _context.Products.Count(p => p.CategoryId == c.Id && p.IsActive)
                 })
                 .ToListAsync();
 
+            HashSet<int> wishlistIds = new();
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userId = _userManager.GetUserId(User)!;
+                wishlistIds = (await _context.WishlistItems
+                    .Where(w => w.UserId == userId)
+                    .Select(w => w.ProductId)
+                    .ToListAsync())
+                    .ToHashSet();
+            }
+
             var products = await _context.Products
-                .AsNoTracking()
-                .Where(p => p.IsActive)
-                .OrderByDescending(p => p.CreatedAt)
-                .Take(8)
-                .Select(p => new HomeProductViewModel
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Price = p.Price,
-                    StockQuantity = p.StockQuantity,
+            .AsNoTracking()
+            .Where(p => p.IsActive)
+            .OrderByDescending(p => p.CreatedAt)
+            .Take(8)
+            .Select(p => new HomeProductViewModel
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                StockQuantity = p.StockQuantity,
+                CategoryName = _context.Categories
+                    .Where(c => c.Id == p.CategoryId)
+                    .Select(c => c.Name)
+                    .FirstOrDefault() ?? string.Empty,
+                ImagePath = _context.ProductImages
+                    .Where(i => i.ProductId == p.Id)
+                    .OrderByDescending(i => i.IsPrimary)
+                    .ThenBy(i => i.Id)
+                    .Select(i => i.ImagePath)
+                    .FirstOrDefault()
+            })
+            .ToListAsync();
 
-                    CategoryName = _context.Categories
-                        .Where(c => c.Id == p.CategoryId)
-                        .Select(c => c.Name)
-                        .FirstOrDefault() ?? string.Empty,
-
-                    ImagePath = _context.ProductImages
-                        .Where(i => i.ProductId == p.Id)
-                        .OrderByDescending(i => i.IsPrimary)
-                        .ThenBy(i => i.Id)
-                        .Select(i => i.ImagePath)
-                        .FirstOrDefault()
-                })
-                .ToListAsync();
+            foreach (var p in products)
+                p.IsInWishlist = wishlistIds.Contains(p.Id);
 
             var testimonials = await (
                 from testimonial in _context.Testimonials.AsNoTracking()

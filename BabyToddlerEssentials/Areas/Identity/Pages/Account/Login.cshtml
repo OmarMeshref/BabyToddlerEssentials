@@ -3,117 +3,134 @@
 
 @{
     ViewData["Title"] = "Log in";
+    Layout = "_AuthLayout";
 }
 
-<div class="auth-page">
+<div class="auth-shell">
 
     <div class="auth-card">
 
-        <div class="auth-brand">
-            <span class="bean">🍬</span>
-            <span>Jellybean</span>
-        </div>
+        <aside class="auth-aside">
 
-        <div class="auth-header">
+            <span class="spark a1">🍬</span>
+            <span class="spark a2">⭐</span>
 
-            <span class="eyebrow">
+            <span class="eyebrow" style="color:#fff">
                 Welcome back
             </span>
 
-            <h1>
-                Log in to your account
-            </h1>
+            <h2>
+                Hello again!
+            </h2>
 
             <p>
-                Welcome back! Enter your details to continue.
+                Sign in to track orders, save favorites
+                and check out faster.
             </p>
 
-        </div>
+            <ul>
+                <li>📦 Track every order</li>
+                <li>💖 Keep your favorites</li>
+                <li>🧾 Download invoices</li>
+            </ul>
 
-        <form id="account"
-              method="post"
-              class="auth-form">
+        </aside>
+
+        <div class="auth-main">
+
+            <h1>
+                Log in
+            </h1>
+
+            <p class="auth-sub">
+                Enter your details to continue.
+            </p>
 
             <div asp-validation-summary="ModelOnly"
                  class="auth-validation"
                  role="alert">
             </div>
 
-            <div class="auth-field">
+            <form id="account"
+                  method="post">
 
-                <label asp-for="Input.Email">
-                    Email
-                </label>
+                <div class="field">
 
-                <input asp-for="Input.Email"
-                       autocomplete="username"
-                       aria-required="true"
-                       placeholder="name@example.com" />
+                    <label asp-for="Input.Email">
+                        Email
+                    </label>
 
-                <span asp-validation-for="Input.Email"
-                      class="auth-error">
-                </span>
+                    <input asp-for="Input.Email"
+                           autocomplete="username"
+                           aria-required="true"
+                           placeholder="you@email.com" />
 
-            </div>
-
-            <div class="auth-field">
-
-                <label asp-for="Input.Password">
-                    Password
-                </label>
-
-                <input asp-for="Input.Password"
-                       autocomplete="current-password"
-                       aria-required="true"
-                       placeholder="Enter your password" />
-
-                <span asp-validation-for="Input.Password"
-                      class="auth-error">
-                </span>
-
-            </div>
-
-            <div class="auth-options">
-
-                <label class="auth-remember">
-
-                    <input asp-for="Input.RememberMe" />
-
-                    <span>
-                        Remember me
+                    <span asp-validation-for="Input.Email"
+                          class="err">
                     </span>
 
-                </label>
+                </div>
 
-                <a id="forgot-password"
-                   asp-page="./ForgotPassword">
-                    Forgot password?
+                <div class="field">
+
+                    <label asp-for="Input.Password">
+                        Password
+                    </label>
+
+                    <input asp-for="Input.Password"
+                           autocomplete="current-password"
+                           aria-required="true"
+                           placeholder="••••••••" />
+
+                    <span asp-validation-for="Input.Password"
+                          class="err">
+                    </span>
+
+                </div>
+
+                <div class="auth-row">
+
+                    <label class="auth-remember">
+
+                        <input asp-for="Input.RememberMe" />
+
+                        <span>
+                            Remember me
+                        </span>
+
+                    </label>
+
+                    <a id="forgot-password"
+                       asp-page="./ForgotPassword">
+
+                        Forgot password?
+
+                    </a>
+
+                </div>
+
+                <button id="login-submit"
+                        type="submit"
+                        class="btn btn--block">
+
+                    Log in →
+
+                </button>
+
+            </form>
+
+            <p class="auth-alt">
+
+                New here?
+
+                <a asp-page="./Register"
+                   asp-route-returnUrl="@Model.ReturnUrl">
+
+                    Create an account
+
                 </a>
 
-            </div>
-
-            <button id="login-submit"
-                    type="submit"
-                    class="auth-submit">
-
-                Log in
-
-            </button>
-
-        </form>
-
-        <div class="auth-footer">
-
-            <span>
-                Don't have an account?
-            </span>
-
-            <a asp-page="./Register"
-               asp-route-returnUrl="@Model.ReturnUrl">
-
-                Create one
-
-            </a>
+            </p>
 
         </div>
 
