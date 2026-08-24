@@ -1,5 +1,4 @@
-﻿@* Reads TempData messages and shows them using the template's global window.toast().
-   Included via @section Scripts in each of my views (layout stays untouched). *@
+﻿@* Reads TempData messages and shows them using the template's global window.toast(). *@
 
 @{
     var success = TempData["SuccessMessage"] as string;
@@ -9,8 +8,32 @@
 
 @if (!string.IsNullOrEmpty(success) || !string.IsNullOrEmpty(error) || !string.IsNullOrEmpty(info))
 {
+    <style>
+        /* Override Bootstrap's .toast (display:none) clashing with the template toast */
+        .toast-wrap {
+            align-items: center;
+            max-width: 90vw;
+            bottom: 32px; /* a touch higher off the bottom */
+            gap: 12px;
+        }
+
+            .toast-wrap .toast {
+                display: flex !important;
+                width: max-content;
+                max-width: 90vw;
+                white-space: nowrap;
+                flex: 0 0 auto;
+                opacity: 1 !important;
+                visibility: visible !important;
+                /* bigger */
+                padding: 18px 30px !important;
+                font-size: 1.1rem !important;
+                border-radius: 999px !important;
+                gap: 12px;
+            }
+    </style>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        (function() {
             if (typeof window.toast !== "function") return;
             @if (!string.IsNullOrEmpty(success))
                 {
@@ -24,6 +47,6 @@
                 {
                     @:window.toast(@Html.Raw(Json.Serialize(info)));
             }
-                });
+                })();
     </script>
 }

@@ -1,0 +1,96 @@
+﻿@model BabyToddlerEssentials.ViewModels.ProductListVM
+@using BabyToddlerEssentials.Helpers
+
+@if (!Model.Products.Any())
+{
+    <div class="empty">
+        <div class="big">🧸</div>
+        <h3>No products found</h3>
+        <p>Try adjusting your search or filters.</p>
+    </div>
+}
+else
+{
+    <div class="product-grid">
+        @foreach (var p in Model.Products)
+        {
+            <article class="card reveal">
+
+                <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="card-media bg-a">
+                    @if (!string.IsNullOrEmpty(p.PrimaryImagePath))
+                    {
+                        <img src="@p.PrimaryImagePath" alt="@p.Name" class="template-product-image" />
+                    }
+                    else
+                    {
+                        <span class="emoji">🧸</span>
+                    }
+                    @if (!p.InStock)
+                    {
+                        <span class="age-badge">Out of stock</span>
+                    }
+                </a>
+
+                <div class="card-body">
+                    <span class="card-cat">@p.CategoryName</span>
+
+                    <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="card-title-link">
+                        <h3 class="card-title">@p.Name</h3>
+                    </a>
+
+                    <div class="card-rating">
+                        @if (p.ReviewCount > 0)
+                        {
+                            <span class="stars">★</span> 
+                            @p.AverageRating.ToString("0.0")
+                            <span class="review-date">(@p.ReviewCount)</span>
+                        }
+                        else
+                        {
+                            <span class="review-date">No reviews yet</span>
+                        }
+                    </div>
+
+                    <div class="card-foot">
+                        <div class="price">
+                            @if (p.DiscountPrice.HasValue)
+                            {
+                                <span>@p.DiscountPrice.Value.ToJod()</span>
+                                <span class="was">@p.Price.ToJod()</span>
+                            }
+                            else
+                            {
+                                <span>@p.Price.ToJod()</span>
+                            }
+                        </div>
+
+                        <form asp-controller="User" asp-action="AddToCart" method="post" data-ajax="cart-wishlist">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@p.Id" />
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                            <button class="add-btn" type="submit" title="Add to cart" @(p.InStock ? "" : "disabled")>🛒</button>
+                        </form>
+                    </div>
+                </div>
+
+            </article>
+        }
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <div class="chip-row" style="justify-content:center; margin-top:32px;">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <a class="chip @(i == Model.Page ? "on" : "")"
+                   asp-controller="Product" asp-action="Index"
+                   asp-route-search="@Model.Search"
+                   asp-route-categoryId="@Model.CategoryId"
+                   asp-route-minPrice="@Model.MinPrice"
+                   asp-route-maxPrice="@Model.MaxPrice"
+                   asp-route-sort="@Model.Sort"
+                   asp-route-page="@i">@i</a>
+            }
+        </div>
+    }
+}
