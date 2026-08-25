@@ -40,7 +40,7 @@ namespace BabyToddlerEssentials.Controllers
             string? sort,
             int page = 1)
         {
-            const int pageSize = 7;
+            const int pageSize = 6;
             if (page < 1) page = 1;
 
             // Only active products are shown to customers
