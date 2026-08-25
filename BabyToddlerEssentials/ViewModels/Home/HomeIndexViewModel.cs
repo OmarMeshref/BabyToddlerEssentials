@@ -47,5 +47,7 @@
         public string Message { get; set; } = string.Empty;
 
         public DateTime CreatedAt { get; set; }
+
+        public string Initial => string.IsNullOrWhiteSpace(CustomerName) ? "?" : CustomerName.Trim().Substring(0, 1).ToUpper();
     }
 }

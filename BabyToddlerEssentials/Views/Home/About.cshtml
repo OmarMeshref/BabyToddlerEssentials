@@ -247,11 +247,6 @@
 
                 @foreach (var testimonial in Model.Testimonials)
                 {
-                    var customerName =
-                        string.IsNullOrWhiteSpace(testimonial.CustomerName)
-                            ? "Customer"
-                            : testimonial.CustomerName;
-
                     <figure class="testi-card">
 
                         <blockquote>
@@ -262,18 +257,14 @@
                         <figcaption>
 
                             <span class="testi-avatar">
-
-                                @customerName
-                                .Substring(0, 1)
-                                .ToUpper()
-
+                                @testimonial.Initial
                             </span>
 
 
                             <span>
 
                                 <b>
-                                    @customerName
+                                    @testimonial.CustomerName
                                 </b>
 
                                 <br />
