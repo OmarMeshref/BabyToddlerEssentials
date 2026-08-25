@@ -21,10 +21,17 @@
                 body: new FormData(form)
             })
             .then(function (res) {
-                if (res.status === 401 || res.redirected) {
-                    window.location.href = res.url || "/Identity/Account/Login";
-                    return null;
-                }
+                    if (res.status === 401) {
+                        const returnUrl =
+                            form.querySelector('input[name="returnUrl"]')?.value
+                            || window.location.pathname + window.location.search;
+
+                        window.location.href =
+                            "/Identity/Account/Login?returnUrl=" +
+                            encodeURIComponent(returnUrl);
+
+                        return null;
+                    }
                 return res.json();
             })
             .then(function (data) {
