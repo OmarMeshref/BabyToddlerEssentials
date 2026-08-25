@@ -261,9 +261,12 @@
                                     }
                                     else
                                     {
-                                        <a asp-page="/Account/Login" area="Identity"
+                                        <a asp-area="Identity"
+                                           asp-page="/Account/Login"
                                            asp-route-returnUrl="@Context.Request.Path"
-                                           class="wish-btn" title="Log in to save to wishlist">
+                                           class="wish-btn"
+                                           title="Log in to save to wishlist"
+                                           onclick="event.stopPropagation();">
                                             <span>♡</span>
                                         </a>
                                     }
