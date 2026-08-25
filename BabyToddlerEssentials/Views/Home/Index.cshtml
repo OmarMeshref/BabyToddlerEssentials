@@ -405,28 +405,28 @@
 <!-- =========================================
      TESTIMONIALS
      ========================================= -->
-@if (Model.Testimonials.Any())
-{
-    <section class="section">
+<section class="section">
 
-        <div class="wrap">
+    <div class="wrap">
 
-            <div class="section-head reveal">
+        <div class="section-head reveal">
 
-                <span class="eyebrow">
-                    Customer stories
-                </span>
+            <span class="eyebrow">
+                Customer stories
+            </span>
 
-                <h2>
-                    What our customers say
-                </h2>
+            <h2>
+                What our customers say
+            </h2>
 
-                <p>
-                    Hear what our customers have to say about Jellybean.
-                </p>
+            <p>
+                Hear what our customers have to say about Baby Bascket.
+            </p>
 
-            </div>
+        </div>
 
+        @if (Model.Testimonials.Any())
+        {
             <div class="testi-grid reveal">
 
                 @foreach (var testimonial in Model.Testimonials.Take(3))
@@ -475,11 +475,38 @@
                 </a>
 
             </div>
+        }
+        else
+        {
+            <div class="empty reveal">
 
-        </div>
+                <div class="big">
+                    💬
+                </div>
 
-    </section>
-}
+                <h3>
+                    Be one of our first customers!
+                </h3>
+
+                <p>
+                    Share your experience with Baby & Toddler Essentials
+                    and help other parents discover our store.
+                </p>
+
+                <a asp-controller="User"
+                   asp-action="Reviews"
+                   class="btn">
+
+                    Share your experience
+
+                </a>
+
+            </div>
+        }
+
+    </div>
+
+</section>
 
 
 <!-- =========================================
