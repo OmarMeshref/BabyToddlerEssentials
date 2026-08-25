@@ -1,5 +1,5 @@
 /* ============================================================
-   Jellybean — Kids & Toddlers store
+   Baby Bascket — Kids & Toddlers store
    Theme: Modern candy (bubblegum pink + sky blue)
    ============================================================ */
 
@@ -671,18 +671,18 @@ img {
     transition: transform .15s, color .15s;
 }
 
-.wish-btn:hover {
-    transform: scale(1.15);
-}
+    .wish-btn:hover {
+        transform: scale(1.15);
+    }
 
-.wish-btn.on {
-    color: var(--pink-deep);
-    background: rgba(255,255,255,.9); /* خلفية ثابتة بيضاء، بس اللون بس بيتغير */
-}
+    .wish-btn.on {
+        color: var(--pink-deep);
+        background: rgba(255,255,255,.9); /* خلفية ثابتة بيضاء، بس اللون بس بيتغير */
+    }
 
-.wish-btn.on span {
-    animation: pop-in .25s cubic-bezier(.34,1.56,.64,1);
-}
+        .wish-btn.on span {
+            animation: pop-in .25s cubic-bezier(.34,1.56,.64,1);
+        }
 
 .card-body {
     padding: 14px 16px 18px;
@@ -1910,15 +1910,19 @@ input[type="range"] {
     align-items: stretch;
 }
 
+/* FIXED: removed flex:1 on blockquote (was forcing a big gap on short
+   testimonials) and added justify-content: space-between on the card
+   so the footer stays anchored without a huge empty area. */
 .testi-card {
     height: 100%;
-    min-height: 260px;
+    min-height: 200px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
 }
 
     .testi-card blockquote {
-        flex: 1;
+        margin: 0 0 16px;
     }
 
 .testimonials-action {
@@ -2739,6 +2743,7 @@ input[type="range"] {
     display: block;
     text-decoration: none;
 }
+
 .site-header {
     padding: 4px 0;
     position: sticky;
@@ -3159,11 +3164,11 @@ input[type="range"] {
     }
 }
 
-        /* stack footer links as full-width centered items */
-        .foot-col a,
-        .foot-col span {
-            display: block;
-        }
+/* stack footer links as full-width centered items */
+.foot-col a,
+.foot-col span {
+    display: block;
+}
 
 /* safety net: never let the footer exceed the screen width */
 .site-footer,
