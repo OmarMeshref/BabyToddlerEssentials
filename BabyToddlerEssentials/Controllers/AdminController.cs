@@ -17,7 +17,7 @@ namespace BabyToddlerEssentials.Controllers
             _context = context;
         }
 
-        // ================= 1. Dashboard Statistics =================
+        //Dashboard Statistics =================
         public async Task<IActionResult> Index()
         {
             ViewBag.TotalUsers = await _context.Users.CountAsync();
@@ -28,18 +28,19 @@ namespace BabyToddlerEssentials.Controllers
             return View();
         }
 
-        // ================= 2. Manage Users =================
+        //Users =================
         public async Task<IActionResult> Users()
         {
             var users = await _context.Users.ToListAsync();
             return View(users);
         }
 
-        // ================= 3. Manage Orders =================
+        // Orders =================
         public async Task<IActionResult> Orders(string? status)
         {
             var ordersQuery = _context.Orders
                 .Include(o => o.User)
+                .Include(o => o.OrderItems) 
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(status))
@@ -84,7 +85,7 @@ namespace BabyToddlerEssentials.Controllers
             return RedirectToAction(nameof(OrderDetails), new { id = order.Id });
         }
 
-        // ================= 4. Manage Reviews & Ratings =================
+        //Reviews & Ratings =================
 
         public async Task<IActionResult> Reviews(ModerationStatus? status)
         {
@@ -141,7 +142,7 @@ namespace BabyToddlerEssentials.Controllers
             return RedirectToAction(nameof(Reviews));
         }
 
-        // ================= 5. Manage Testimonials =================
+        //Testimonials =================
        
         public async Task<IActionResult> Testimonials(ModerationStatus? status)
         {
