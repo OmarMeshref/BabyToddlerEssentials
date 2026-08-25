@@ -44,6 +44,12 @@ body {
     overflow-x: hidden;
 }
 
+/* Stop any element from causing horizontal scroll (fixes footer overflow too) */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
     /* candy-dot ambient background */
     body::before {
         content: "";
@@ -605,6 +611,22 @@ img {
 .card:hover .card-media .emoji {
     transform: scale(1.12) rotate(-5deg);
 }
+
+/* Uniform product image size + bottom border (home + shop cards) */
+.card-media {
+    height: 210px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 3px solid var(--pink);
+}
+
+    .card-media .template-product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
 
 .age-badge {
     position: absolute;
@@ -3070,4 +3092,82 @@ input[type="range"] {
     .auth-main {
         padding: 32px 24px;
     }
+}
+
+/* Smaller product cards on tablet (3 across) */
+@media (max-width: 900px) {
+    .product-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+    }
+
+    .card-media {
+        height: 150px;
+    }
+
+    .card-title {
+        font-size: 0.95rem;
+    }
+}
+
+/* Compact product cards on phone (2 across) */
+@media (max-width: 560px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .card-media {
+        height: 130px;
+    }
+
+    .card-body {
+        padding: 12px;
+    }
+
+    .card-title {
+        font-size: 0.9rem;
+    }
+
+    .price {
+        font-size: 1rem;
+    }
+}
+
+/* Footer: responsive fix for small screens (stops horizontal scroll) */
+@media (max-width: 640px) {
+    .foot-grid {
+        grid-template-columns: 1fr 1fr; /* two columns on small screens */
+        gap: 24px;
+    }
+}
+
+@media (max-width: 467px) {
+    .foot-grid {
+        grid-template-columns: 1fr 1fr; /* keep 2 columns, don't collapse to 1 */
+        gap: 20px;
+    }
+
+    /* let every footer link/heading wrap instead of overflowing */
+    .foot-col,
+    .foot-col a,
+    .foot-col span,
+    .foot-col h4 {
+        white-space: normal;
+        word-break: break-word;
+        max-width: 100%;
+    }
+}
+
+        /* stack footer links as full-width centered items */
+        .foot-col a,
+        .foot-col span {
+            display: block;
+        }
+
+/* safety net: never let the footer exceed the screen width */
+.site-footer,
+.foot-grid {
+    max-width: 100%;
+    overflow-x: hidden;
 }
