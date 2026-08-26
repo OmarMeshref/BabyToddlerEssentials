@@ -171,13 +171,18 @@ namespace BabyToddlerEssentials.Controllers
             // Whether the current user can leave a review
             if (User.Identity?.IsAuthenticated == true)
             {
-                var userId = _context.Users
-                    .Where(u => u.UserName == User.Identity!.Name)
-                    .Select(u => u.Id)
-                    .FirstOrDefault();
+                var userId = _userManager.GetUserId(User)!;
 
                 vm.AlreadyReviewed = product.ProductReviews.Any(r => r.UserId == userId);
-                vm.CanReview = !vm.AlreadyReviewed;
+
+                // Has the user actually bought this product? (paid order containing it)
+                bool hasPurchased = await _context.Orders
+                    .AnyAsync(o => o.UserId == userId
+                                && o.IsPaid
+                                && o.OrderItems.Any(oi => oi.ProductId == product.Id));
+
+                vm.HasPurchased = hasPurchased;
+                vm.CanReview = hasPurchased && !vm.AlreadyReviewed;
             }
 
             return View(vm);
@@ -460,6 +465,18 @@ namespace BabyToddlerEssentials.Controllers
             if (!productExists) return NotFound();
 
             var userId = _userManager.GetUserId(User)!;
+
+            // Must have purchased the product (paid order) to review it
+            bool hasPurchased = await _context.Orders
+                .AnyAsync(o => o.UserId == userId
+                            && o.IsPaid
+                            && o.OrderItems.Any(oi => oi.ProductId == model.ProductId));
+
+            if (!hasPurchased)
+            {
+                TempData["ErrorMessage"] = "Only customers who purchased this product can leave a review.";
+                return RedirectToAction(nameof(Details), new { id = model.ProductId });
+            }
 
             // One review per user per product (matches the unique DB index)
             bool already = await _context.ProductReviews
