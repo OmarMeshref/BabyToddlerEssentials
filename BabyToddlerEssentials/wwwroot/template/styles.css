@@ -41,12 +41,12 @@ body {
     background: var(--cream);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 /* Stop any element from causing horizontal scroll (fixes footer overflow too) */
 html, body {
-    overflow-x: hidden;
+    overflow-x: clip;
     max-width: 100%;
 }
 
@@ -670,10 +670,6 @@ img {
     background: rgba(255,255,255,.9);
     transition: transform .15s, color .15s;
 }
-
-    .wish-btn:hover {
-        transform: scale(1.15);
-    }
 
     .wish-btn.on {
         color: var(--pink-deep);
@@ -3175,4 +3171,37 @@ input[type="range"] {
 .foot-grid {
     max-width: 100%;
     overflow-x: hidden;
+}
+
+/* ---------- Category tile image (uniform size, fixes misaligned cards) ---------- */
+.cat-media {
+    width: 100%;
+    height: 130px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    background: var(--cream);
+}
+
+    .cat-media .template-category-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .cat-media .emoji {
+        font-size: 2.6rem;
+    }
+
+/* Keep tile name from stretching the card height differently between tiles */
+.cat-tile .name {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 2.6em; /* reserves space for 2 lines so all tiles align even if some names wrap */
+    line-height: 1.3;
 }
