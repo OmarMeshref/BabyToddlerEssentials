@@ -12,30 +12,42 @@
     <a asp-controller="Categories" asp-action="Manage" class="btn btn-secondary">Cancel</a>
 </div>
 
-<form asp-controller="Categories" asp-action="Create" method="post" enctype="multipart/form-data" style="max-width:640px;">
+<form id="createCategoryForm" asp-controller="Categories" asp-action="Create" method="post" enctype="multipart/form-data" style="max-width:640px;">
     @Html.AntiForgeryToken()
 
     <div class="form-card">
+        
         <div class="form-field">
-            <label asp-for="Name">Category Name <span class="required-mark">*</span></label>
-            <input asp-for="Name" class="text-input" placeholder="e.g. Baby Clothing">
-            <span asp-validation-for="Name" class="field-error" style="display:block;"></span>
+            <label asp-for="Name">Category Name <span class="required-mark" style="color: #e5347f;">*</span></label>
+            <input asp-for="Name" id="categoryNameInput" class="text-input" placeholder="e.g. Baby Clothing">
+            <span id="clientNameError" class="field-error" style="display:none; color: #e5347f; font-size: 0.85rem; font-weight: 700; margin-top: 5px;">
+                Category name is required.
+            </span>
+            <span asp-validation-for="Name" class="field-error" style="display:block; color: #e5347f; font-size: 0.85rem; font-weight: 700; margin-top: 5px;"></span>
         </div>
 
+        <!-- Description -->
         <div class="form-field">
-            <label asp-for="Description">Description</label>
-            <textarea asp-for="Description" class="text-input" placeholder="A short description shown on the storefront..."></textarea>
-            <span asp-validation-for="Description" class="field-error" style="display:block;"></span>
+            <label asp-for="Description">Description <span class="required-mark" style="color: #e5347f;">*</span></label>
+            <textarea asp-for="Description" id="categoryDescInput" class="text-input" placeholder="A short description shown on the storefront..."></textarea>
+            <span id="clientDescError" class="field-error" style="display:none; color: #e5347f; font-size: 0.85rem; font-weight: 700; margin-top: 5px;">
+                Description is required.
+            </span>
+            <span asp-validation-for="Description" class="field-error" style="display:block; color: #e5347f; font-size: 0.85rem; font-weight: 700; margin-top: 5px;"></span>
         </div>
 
+        
         <div class="form-field">
-            <label>Category Image</label>
-            <label class="dropzone" for="cImage" style="cursor: pointer;">
+            <label>Category Image <span class="required-mark" style="color: #e5347f;">*</span></label>
+            <label class="dropzone" id="dropzoneBorder" for="cImage" style="cursor: pointer;">
                 <i class="fa-solid fa-image"></i>
                 <p><strong>Click to upload</strong> a category image — JPG, PNG, WEBP</p>
                 <input asp-for="ImageFile" id="cImage" type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none;" onchange="previewCategoryImage(event)">
             </label>
-            <span asp-validation-for="ImageFile" class="field-error" style="display:block; margin-top:8px;"></span>
+            <span id="clientImageError" class="field-error" style="display:none; color: #e5347f; font-size: 0.85rem; font-weight: 700; margin-top: 5px;">
+                Please select an image for this category.
+            </span>
+            <span asp-validation-for="ImageFile" class="field-error" style="display:block; color: #e5347f; font-size: 0.85rem; font-weight: 700; margin-top: 8px;"></span>
             <div class="image-grid" id="cImagePreview" style="margin-top: 12px;"></div>
         </div>
     </div>
@@ -47,12 +59,80 @@
 </form>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
     <script>
+        const nameInput = document.getElementById('categoryNameInput');
+        const descInput = document.getElementById('categoryDescInput');
+        const imageInput = document.getElementById('cImage');
+        const dropzone = document.getElementById('dropzoneBorder');
+
+        const nameError = document.getElementById('clientNameError');
+        const descError = document.getElementById('clientDescError');
+        const imageError = document.getElementById('clientImageError');
+
+        
+        document.getElementById('createCategoryForm').addEventListener('submit', function (e) {
+            let isValid = true;
+
+            
+            if (!nameInput.value || nameInput.value.trim() === '') {
+                nameError.style.display = 'block';
+                nameInput.style.borderColor = '#e5347f';
+                isValid = false;
+            } else {
+                nameError.style.display = 'none';
+                nameInput.style.borderColor = '';
+            }
+
+            
+            if (!descInput.value || descInput.value.trim() === '') {
+                descError.style.display = 'block';
+                descInput.style.borderColor = '#e5347f';
+                isValid = false;
+            } else {
+                descError.style.display = 'none';
+                descInput.style.borderColor = '';
+            }
+
+            
+            if (!imageInput.files || imageInput.files.length === 0) {
+                imageError.style.display = 'block';
+                dropzone.style.borderColor = '#e5347f';
+                isValid = false;
+            } else {
+                imageError.style.display = 'none';
+                dropzone.style.borderColor = '';
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+
+        
+        nameInput.addEventListener('input', function () {
+            if (this.value.trim() !== '') {
+                nameError.style.display = 'none';
+                this.style.borderColor = '';
+            }
+        });
+
+        descInput.addEventListener('input', function () {
+            if (this.value.trim() !== '') {
+                descError.style.display = 'none';
+                this.style.borderColor = '';
+            }
+        });
+
         function previewCategoryImage(event) {
             const preview = document.getElementById('cImagePreview');
             preview.innerHTML = '';
             const file = event.target.files[0];
             if (file) {
+                imageError.style.display = 'none';
+                dropzone.style.borderColor = '';
+
                 const img = document.createElement('img');
                 img.src = URL.createObjectURL(file);
                 img.style.width = '90px';
