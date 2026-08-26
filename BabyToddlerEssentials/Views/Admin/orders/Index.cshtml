@@ -15,10 +15,10 @@
     <div class="toolbar">
         <div class="search-input">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" id="orderIdSearch" placeholder="Search by Order #, customer name, or email..." oninput="filterOrders()">
+            <input type="text" id="orderIdSearch" placeholder="Search by Order #, customer name, or email..." oninput="handleFilterChange()">
         </div>
 
-        <select class="select-control" id="orderStatusFilter" onchange="filterOrders()">
+        <select class="select-control" id="orderStatusFilter" onchange="handleFilterChange()">
             <option value="">All Status</option>
             <option value="Processing">Processing</option>
             <option value="Completed">Completed</option>
@@ -40,7 +40,7 @@
                     <th class="actions-cell">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="ordersTableBody">
                 @if (Model != null && Model.Any())
                 {
                     @foreach (var order in Model)
@@ -95,7 +95,7 @@
                 }
                 else
                 {
-                    <tr>
+                    <tr id="emptyStaticRow">
                         <td colspan="8">
                             <div class="empty-state">
                                 <div class="empty-state__icon"><i class="fa-solid fa-bag-shopping"></i></div>
@@ -108,28 +108,104 @@
             </tbody>
         </table>
     </div>
+
+   
+    <div id="ordersPaginationContainer" style="display: none; justify-content: space-between; align-items: center; padding: 18px 0 6px; border-top: 1px solid var(--line, #F3E3EE); margin-top: 15px;">
+        <div id="ordersPaginationInfo" style="font-size: 0.9rem; color: var(--ink-soft, #6B5C79); font-weight: 600;"></div>
+        <div id="ordersPaginationButtons" style="display: flex; gap: 6px; align-items: center;"></div>
+    </div>
 </div>
 
 @section Scripts {
     <script>
-        function filterOrders() {
+        const rowsPerPage = 10;
+        let currentPage = 1;
+        let visibleRows = [];
+
+        function getFilteredRows() {
             const searchVal = document.getElementById('orderIdSearch').value.toLowerCase().trim();
             const selectedStatus = document.getElementById('orderStatusFilter').value.toLowerCase();
-            const rows = document.querySelectorAll('#ordersTable tbody tr.order-row');
+            const allRows = Array.from(document.querySelectorAll('#ordersTableBody tr.order-row'));
 
-            rows.forEach(row => {
+            return allRows.filter(row => {
                 const text = row.innerText.toLowerCase();
                 const rowStatus = (row.getAttribute('data-status') || '').toLowerCase();
 
                 const matchesSearch = text.includes(searchVal);
                 const matchesStatus = selectedStatus === '' || rowStatus === selectedStatus;
 
-                if (matchesSearch && matchesStatus) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                return matchesSearch && matchesStatus;
             });
         }
+
+        function renderOrdersPagination() {
+            const allRows = Array.from(document.querySelectorAll('#ordersTableBody tr.order-row'));
+            visibleRows = getFilteredRows();
+
+            const totalRows = visibleRows.length;
+            const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+            const paginationContainer = document.getElementById('ordersPaginationContainer');
+            const paginationButtons = document.getElementById('ordersPaginationButtons');
+            const paginationInfo = document.getElementById('ordersPaginationInfo');
+
+           
+            allRows.forEach(r => r.style.display = 'none');
+
+            if (totalRows <= rowsPerPage) {
+                paginationContainer.style.display = 'none';
+                visibleRows.forEach(r => r.style.display = '');
+                return;
+            }
+
+            paginationContainer.style.display = 'flex';
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            visibleRows.forEach((row, index) => {
+                if (index >= start && index < end) {
+                    row.style.display = '';
+                }
+            });
+
+            paginationInfo.innerHTML = `Showing Page <strong>${currentPage}</strong> of <strong>${totalPages}</strong> (${totalRows} Orders)`;
+
+            let buttonsHtml = '';
+
+           
+            if (currentPage > 1) {
+                buttonsHtml += `<button type="button" onclick="changeOrderPage(${currentPage - 1})" class="btn btn-secondary btn-sm" style="padding: 6px 12px; border-radius: 8px;"><i class="fa-solid fa-chevron-left"></i></button>`;
+            }
+
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentPage) {
+                    buttonsHtml += `<span class="btn btn-primary btn-sm" style="padding: 6px 14px; border-radius: 8px; pointer-events: none; font-weight: 800;">${i}</span>`;
+                } else if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    buttonsHtml += `<button type="button" onclick="changeOrderPage(${i})" class="btn btn-secondary btn-sm" style="padding: 6px 14px; border-radius: 8px; font-weight: 700;">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    buttonsHtml += `<span style="padding: 0 4px; color: var(--ink-soft);">...</span>`;
+                }
+            }
+
+           
+            if (currentPage < totalPages) {
+                buttonsHtml += `<button type="button" onclick="changeOrderPage(${currentPage + 1})" class="btn btn-secondary btn-sm" style="padding: 6px 12px; border-radius: 8px;"><i class="fa-solid fa-chevron-right"></i></button>`;
+            }
+
+            paginationButtons.innerHTML = buttonsHtml;
+        }
+
+        function changeOrderPage(page) {
+            currentPage = page;
+            renderOrdersPagination();
+        }
+
+        function handleFilterChange() {
+            currentPage = 1;
+            renderOrdersPagination();
+        }
+
+        document.addEventListener('DOMContentLoaded', renderOrdersPagination);
     </script>
 }

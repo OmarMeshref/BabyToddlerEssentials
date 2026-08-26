@@ -287,77 +287,52 @@ namespace BabyToddlerEssentials.Controllers
             return View(new CategoriesFormViewModel());
         }
 
-        // ADMIN
-        // CREATE POST
         [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CategoriesFormViewModel model)
         {
+            if (string.IsNullOrWhiteSpace(model.Name))
+            {
+                ModelState.AddModelError(nameof(model.Name), "Category name is required.");
+                return View(model);
+            }
+
             model.Name = model.Name.Trim();
 
-
-            var nameExists =
-                await _context.Categories
-                    .AnyAsync(c =>
-                        c.Name.ToLower() ==
-                        model.Name.ToLower());
-
+            var nameExists = await _context.Categories
+                .AnyAsync(c => c.Name.ToLower() == model.Name.ToLower());
 
             if (nameExists)
             {
-                ModelState.AddModelError(
-                    nameof(model.Name),
-                    "A category with this name already exists.");
+                ModelState.AddModelError(nameof(model.Name), "A category with this name already exists.");
             }
 
-
-            ValidateImage(
-                model.ImageFile,
-                nameof(model.ImageFile));
-
+            ValidateImage(model.ImageFile, nameof(model.ImageFile));
 
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-
             string? imagePath = null;
-
-
             if (model.ImageFile is not null)
             {
-                imagePath =
-                    await SaveCategoryImageAsync(
-                        model.ImageFile);
+                imagePath = await SaveCategoryImageAsync(model.ImageFile);
             }
-
 
             var category = new Category
             {
                 Name = model.Name,
-
-                Description =
-                    string.IsNullOrWhiteSpace(model.Description)
-                        ? null
-                        : model.Description.Trim(),
-
+                Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim(),
                 ImagePath = imagePath,
-
                 IsActive = true
             };
 
-
             _context.Categories.Add(category);
-
             await _context.SaveChangesAsync();
 
-
-            TempData["SuccessMessage"] =
-                "Category created successfully.";
-
-
+            TempData["SuccessMessage"] = "Category created successfully.";
             return RedirectToAction(nameof(Manage));
         }
         // ADMIN
