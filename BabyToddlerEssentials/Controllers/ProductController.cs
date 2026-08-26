@@ -399,14 +399,32 @@ namespace BabyToddlerEssentials.Controllers
 
             if (product == null) return NotFound();
 
-            // Remove image files from wwwroot first
-            foreach (var img in product.ProductImages)
-                _imageService.Delete(img.ImagePath);
+            bool hasOrders = await _context.OrderItems.AnyAsync(oi => oi.ProductId == id);
 
-            _context.Products.Remove(product); // images cascade-delete in the DB
+            if (hasOrders)
+            {
+                product.IsActive = false;
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Product has order history, so it was deactivated instead of permanently deleted.";
+                return RedirectToAction(nameof(Manage));
+            }
+
+            var wishlistItems = _context.WishlistItems.Where(w => w.ProductId == id);
+            _context.WishlistItems.RemoveRange(wishlistItems);
+
+            var reviews = _context.ProductReviews.Where(r => r.ProductId == id);
+            _context.ProductReviews.RemoveRange(reviews);
+
+            foreach (var img in product.ProductImages)
+            {
+                _imageService.Delete(img.ImagePath);
+            }
+
+            _context.Products.Remove(product);
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Product deleted.";
+            TempData["SuccessMessage"] = "Product deleted permanently.";
             return RedirectToAction(nameof(Manage));
         }
 

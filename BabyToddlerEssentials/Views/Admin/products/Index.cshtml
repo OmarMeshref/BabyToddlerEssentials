@@ -48,7 +48,7 @@
     </form>
 
     <div class="table-scroll">
-        <table class="data-table">
+        <table class="data-table" id="productsTable">
             <thead>
                 <tr>
                     <th>Product</th>
@@ -60,7 +60,7 @@
                     <th class="actions-cell">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="productsTableBody">
                 @if (Model != null && Model.Any())
                 {
                     @foreach (var item in Model)
@@ -69,7 +69,7 @@
                                          ?? item.ProductImages?.FirstOrDefault()?.ImagePath
                                          ?? "/images/default-product.png";
 
-                        <tr>
+                        <tr class="product-row">
                             <td>
                                 <div class="cell-product">
                                     <img src="@primaryImg" alt="@item.Name" class="cell-thumb">
@@ -81,7 +81,7 @@
                                 @if (item.DiscountPrice.HasValue)
                                 {
                                     <strong>@item.DiscountPrice.Value.ToString("0.00") JOD</strong>
-                                    <span class="cell-muted"><del>$@item.Price.ToString("0.00")</del></span>
+                                    <span class="cell-muted"><del>@item.Price.ToString("0.00") JOD</del></span>
                                 }
                                 else
                                 {
@@ -130,10 +130,83 @@
             </tbody>
         </table>
     </div>
+
+   
+    <div id="paginationContainer" style="display: none; justify-content: space-between; align-items: center; padding: 18px 0 6px; border-top: 1px solid var(--line, #F3E3EE); margin-top: 15px;">
+        <div id="paginationInfo" style="font-size: 0.9rem; color: var(--ink-soft, #6B5C79); font-weight: 600;"></div>
+        <div id="paginationButtons" style="display: flex; gap: 6px; align-items: center;"></div>
+    </div>
 </div>
 
 @section Scripts {
     <script>
+        
+        const rowsPerPage = 10;
+        let currentPage = 1;
+        const rows = Array.from(document.querySelectorAll('#productsTableBody tr.product-row'));
+        const totalRows = rows.length;
+        const totalPages = Math.ceil(totalRows / rowsPerPage);
+
+        const paginationContainer = document.getElementById('paginationContainer');
+        const paginationButtons = document.getElementById('paginationButtons');
+        const paginationInfo = document.getElementById('paginationInfo');
+
+        function renderPagination() {
+            if (totalRows <= rowsPerPage) {
+                paginationContainer.style.display = 'none';
+                rows.forEach(r => r.style.display = '');
+                return;
+            }
+
+            paginationContainer.style.display = 'flex';
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            rows.forEach((row, index) => {
+                if (index >= start && index < end) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            paginationInfo.innerHTML = `Showing Page <strong>${currentPage}</strong> of <strong>${totalPages}</strong> (${totalRows} Products)`;
+
+            let buttonsHtml = '';
+
+           
+            if (currentPage > 1) {
+                buttonsHtml += `<button type="button" onclick="changePage(${currentPage - 1})" class="btn btn-secondary btn-sm" style="padding: 6px 12px; border-radius: 8px;"><i class="fa-solid fa-chevron-left"></i></button>`;
+            }
+
+            
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === currentPage) {
+                    buttonsHtml += `<span class="btn btn-primary btn-sm" style="padding: 6px 14px; border-radius: 8px; pointer-events: none; font-weight: 800;">${i}</span>`;
+                } else if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                    buttonsHtml += `<button type="button" onclick="changePage(${i})" class="btn btn-secondary btn-sm" style="padding: 6px 14px; border-radius: 8px; font-weight: 700;">${i}</button>`;
+                } else if (i === currentPage - 3 || i === currentPage + 3) {
+                    buttonsHtml += `<span style="padding: 0 4px; color: var(--ink-soft);">...</span>`;
+                }
+            }
+
+            
+            if (currentPage < totalPages) {
+                buttonsHtml += `<button type="button" onclick="changePage(${currentPage + 1})" class="btn btn-secondary btn-sm" style="padding: 6px 12px; border-radius: 8px;"><i class="fa-solid fa-chevron-right"></i></button>`;
+            }
+
+            paginationButtons.innerHTML = buttonsHtml;
+        }
+
+        function changePage(page) {
+            currentPage = page;
+            renderPagination();
+        }
+
+       
+        document.addEventListener('DOMContentLoaded', renderPagination);
+
+        
         let searchTimer;
         const searchInput = document.getElementById('liveSearchInput');
         const filterForm = document.getElementById('productFilterForm');
