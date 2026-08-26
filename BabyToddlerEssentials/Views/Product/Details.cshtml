@@ -180,12 +180,20 @@
                         </button>
                     </form>
 
-                    <form asp-controller="User" asp-action="AddToWishlist" method="post" data-ajax="cart-wishlist">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="productId" value="@Model.Product.Id" />
-                        <input type="hidden" name="returnUrl" value="@returnUrl" />
-                        <button class="btn btn--ghost" type="submit">💖 Add to wishlist</button>
-                    </form>
+                    @if (User.Identity?.IsAuthenticated == true)
+                    {
+                        <form asp-controller="User" asp-action="AddToWishlist" method="post" data-ajax="cart-wishlist">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="productId" value="@Model.Product.Id" />
+                            <input type="hidden" name="returnUrl" value="@returnUrl" />
+                            <button class="btn btn--ghost" type="submit">💖 Add to wishlist</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-area="Identity" asp-page="/Account/Login" asp-route-returnUrl="@returnUrl"
+                           class="btn btn--ghost">💖 Add to wishlist</a>
+                    }
                 </div>
 
             </div>
@@ -246,7 +254,11 @@
                     }
                     else if (Model.AlreadyReviewed)
                     {
-                        <div class="form-card"><p>✅ You’ve already reviewed this product.</p></div>
+                        <div class="form-card"><p>✅ You've already reviewed this product.</p></div>
+                    }
+                    else if (User.Identity?.IsAuthenticated == true && !Model.HasPurchased)
+                    {
+                        <div class="form-card"><p>🛍️ Only customers who purchased this product can leave a review.</p></div>
                     }
                     else
                     {

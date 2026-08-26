@@ -71,6 +71,17 @@
     .section {
         padding-top: 24px;
     }
+
+    /* Sticky filter sidebar on desktop only */
+    @@media (min-width: 981px) {
+        .filters {
+            position: sticky;
+            top: 90px; /* clears the fixed header */
+            align-self: start; /* needed for sticky inside a grid */
+            max-height: calc(100vh - 110px);
+            overflow-y: auto; /* scroll inside if filters get tall */
+        }
+    }
 </style>
 
 

@@ -24,5 +24,7 @@ namespace BabyToddlerEssentials.ViewModels
         // UI flags decided in the controller
         public bool CanReview { get; set; }        // logged in AND hasn't reviewed yet
         public bool AlreadyReviewed { get; set; }
+
+        public bool HasPurchased { get; set; }
     }
 }
