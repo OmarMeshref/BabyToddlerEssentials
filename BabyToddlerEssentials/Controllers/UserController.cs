@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BabyToddlerEssentials.Controllers
 {
+
     // NOTE: [Authorize] is intentionally NOT on the class — the cart must work
     // for guests (no login). Each action that needs a login has its own [Authorize].
     public class UserController : Controller
