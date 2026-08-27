@@ -440,9 +440,11 @@ namespace BabyToddlerEssentials.Controllers
 
             var orders = await _context.Orders
                 .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .ThenInclude(p => p.ProductImages)
                 .Where(o => o.UserId == userId)
-                .OrderByDescending(o => o.OrderDate)
-                .ToListAsync();
+                 .OrderByDescending(o => o.OrderDate)
+                 .ToListAsync();
 
             var vm = new OrderListVM
             {
